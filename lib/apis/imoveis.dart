@@ -24,7 +24,6 @@ Future<List<dynamic>?> listarImoveis() async {
 
     final data = jsonDecode(resposta.body);
 
-    
     for (final imovel in data) {
       final anuncio = imovel["anuncio"];
 
@@ -37,13 +36,105 @@ Future<List<dynamic>?> listarImoveis() async {
       }
     }
 
-
-    print(data.runtimeType);
-    print(data);
-
     return data as List<dynamic>;
   } catch (e) {
     print("Erro: $e");
+    return null;
+  }
+}
+
+Future<List<dynamic>?> listarImoveisDisponiveis() async {
+  try {
+    final uri = Uri.parse(
+      "http://10.0.2.2/PHP/projeto-pi-front/php/api/imoveis.php?acao=listar_imoveis_disponiveis",
+    );
+    final resposta = await http.get(uri);
+    if (resposta.statusCode != 200) {
+      print("Erro HTTP: ${resposta.statusCode}");
+      return null;
+    }
+
+    final contentType = resposta.headers["content-type"];
+
+    if (contentType == null || !contentType.contains("application/json")) {
+      print("Resposta não é JSON");
+      print(resposta.body);
+      return null;
+    }
+
+    final data = jsonDecode(resposta.body);
+
+    for (final imovel in data) {
+      print(imovel["id"]);
+      switch (imovel["status"]) {
+        case "Venda":
+          imovel["valor_aluguel"] = null;
+          break;
+        case "Aluguel":
+          imovel["valor_venda"] = null;
+          break;
+        default:
+          break;
+      }
+    }
+
+    for (final imovel in data) {
+      final anuncio = imovel["anuncio"];
+
+      if (anuncio != null && anuncio["imagens"] != null) {
+        final imagens = anuncio["imagens"] as List<dynamic>;
+
+        for (int i = 0; i < imagens.length; i++) {
+          imagens[i] = "http://10.0.2.2${imagens[i]}";
+        }
+      }
+    }
+
+    return data as List<dynamic>;
+  } catch (e) {
+    print("Falha ao conectar com o backend: $e");
+    return null;
+  }
+}
+
+Future<List<dynamic>?> getDadosImovel(id) async {
+  try {
+    final uri = Uri.parse(
+      "http://10.0.2.2/PHP/projeto-pi-front/php/api/imoveis.php?acao=get_dados_imovel&id=" +
+          id,
+    );
+
+    final resposta = await http.get(uri);
+    if (resposta.statusCode != 200) {
+      print("Erro HTTP: ${resposta.statusCode}");
+      return null;
+    }
+
+    final contentType = resposta.headers["content-type"];
+
+    if (contentType == null || !contentType.contains("application/json")) {
+      print("Resposta não é JSON");
+      print(resposta.body);
+      return null;
+    }
+
+    final data = jsonDecode(resposta.body);
+
+    // for (final imovel in data) {
+    //   final anuncio = imovel["anuncio"];
+
+    //   if (anuncio != null && anuncio["imagens"] != null) {
+    //     final imagens = anuncio["imagens"] as List<dynamic>;
+
+    //     for (int i = 0; i < imagens.length; i++) {
+    //       imagens[i] = "http://10.0.2.2${imagens[i]}";
+    //     }
+    //   }
+    // }
+
+    return data as List<dynamic>;
+  } catch (e) {
+    print("Falha ao conectar com o backend: $e");
     return null;
   }
 }
