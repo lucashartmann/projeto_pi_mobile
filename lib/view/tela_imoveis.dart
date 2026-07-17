@@ -35,12 +35,7 @@ class ContainerImovel extends StatelessWidget {
             Checkbox(value: false, onChanged: (_) {}),
 
             if (imagem != null)
-              Image.network(
-                imagem,
-                width: 120,
-                height: 90,
-                fit: BoxFit.cover,
-              )
+              Image.network(imagem, width: 120, height: 90, fit: BoxFit.cover)
             else
               Container(
                 width: 120,
@@ -57,9 +52,7 @@ class ContainerImovel extends StatelessWidget {
                 children: [
                   Text("Ref: ${imovel["id"]}"),
 
-                  Text(
-                    "Rua: ${endereco["rua"]}, ${endereco["numero"]}",
-                  ),
+                  Text("Rua: ${endereco["rua"]}, ${endereco["numero"]}"),
 
                   Text("Bairro: ${endereco["bairro"]}"),
 
@@ -69,25 +62,20 @@ class ContainerImovel extends StatelessWidget {
 
                   Text("Status: ${imovel["status"]}"),
 
-                  Text(
-                    "Aluguel: R\$ ${imovel["valor_aluguel"]}",
-                  ),
+                  Text("Aluguel: R\$ ${imovel["valor_aluguel"]}"),
 
                   Text("Venda: R\$ ${imovel["valor_venda"]}"),
                 ],
               ),
             ),
 
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.more_vert),
-            ),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
           ],
         ),
       ),
     );
   }
-} 
+}
 
 class _TelaImoveisState extends State<TelaImoveis> {
   List<dynamic> imoveis = [];
@@ -126,6 +114,16 @@ class _TelaImoveisState extends State<TelaImoveis> {
                 return ContainerImovel(imovel: imovel);
               },
             ),
+      bottomNavigationBar: BottomNavigationBar(
+        // fazer a barra ficar sempre na tela sobre o conteúdo
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: const Color.fromARGB(255, 251, 39, 39),
+
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
+      ),
     );
   }
 }

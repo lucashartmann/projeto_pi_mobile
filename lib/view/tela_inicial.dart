@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import '../apis/imoveis.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'dados_imovel.dart';
 
 class TelaInicial extends StatefulWidget {
   const TelaInicial({super.key});
 
   @override
   State<TelaInicial> createState() => _TelaInicialState();
+}
+
+void abrirTelaImovel(BuildContext context, Map<String, dynamic> imovel) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => DadosImovel(imovel: imovel)),
+  );
 }
 
 class ContainerAnuncio extends StatelessWidget {
@@ -23,31 +32,64 @@ class ContainerAnuncio extends StatelessWidget {
       imagem = imagens.first;
     }
 
-    return SizedBox(
-      width: 120,
-      height: 50,
-      child: Padding(
+    return GestureDetector(
+      onTap: () {
+        abrirTelaImovel(context, imovel);
+      },
+      child: Container(
         padding: const EdgeInsets.all(10),
+        color: const Color.fromRGBO(203, 199, 199, 0.6),
         child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (imagem != null)
               Image.network(
                 imagem,
-                width: 220,
-                height: 190,
+                width: double.infinity,
+                height: 140,
                 fit: BoxFit.cover,
-                alignment: Alignment.center,
               ),
+
             Text("${imovel["anuncio"]["titulo"]}"),
+
             Text(
               "${imovel["endereco"]["rua"]}, ${imovel["endereco"]["numero"]}, ${imovel['endereco']['cep']}, ${imovel["endereco"]["bairro"]}, ${imovel["endereco"]["cidade"]} - ${imovel["endereco"]["uf"]}",
             ),
+
             Text("Categoria: ${imovel["categoria"]}"),
+
             if (imovel["valor_aluguel"] != null)
-              Text("Aluguel: R\$ ${imovel["valor_aluguel"]}"),
+              RichText(
+                text: TextSpan(
+                  style: const TextStyle(color: Colors.black, fontSize: 16),
+                  children: [
+                    const TextSpan(text: "Aluguel: "),
+                    TextSpan(
+                      text: "R\$ ${imovel["valor_aluguel"]}",
+                      style: const TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             if (imovel["valor_venda"] != null)
-              Text("Venda: R\$ ${imovel["valor_venda"]}"),
+              RichText(
+                text: TextSpan(
+                  style: const TextStyle(color: Colors.black, fontSize: 16),
+                  children: [
+                    const TextSpan(text: "Venda: "),
+                    TextSpan(
+                      text: "R\$ ${imovel["valor_venda"]}",
+                      style: const TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -77,22 +119,36 @@ class _TelaInicialState extends State<TelaInicial> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Lista de Imóveis")),
       body: carregando
           ? const Center(child: CircularProgressIndicator())
-          : GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-              ),
+          : MasonryGridView.builder(
+              gridDelegate:
+                  const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                  ),
               itemCount: imoveis.length,
+              mainAxisSpacing: 15,
+              crossAxisSpacing: 15,
               itemBuilder: (context, index) {
-                final imovel = imoveis[index];
-                return ContainerAnuncio(imovel: imovel);
+                return ContainerAnuncio(imovel: imoveis[index]);
               },
             ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: const Color.fromRGBO(36, 30, 30, 0.92),
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.white,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.white),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: Colors.white),
+            label: 'Profile',
+          ),
+        ],
+      ),
     );
   }
 }
