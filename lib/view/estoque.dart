@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../apis/imoveis.dart';
 
-class TelaImoveis extends StatefulWidget {
-  const TelaImoveis({super.key});
+class Estoque extends StatefulWidget {
+  const Estoque({super.key});
 
   @override
-  State<TelaImoveis> createState() => _TelaImoveisState();
+  State<Estoque> createState() => _EstoqueState();
 }
 
 class ContainerImovel extends StatelessWidget {
@@ -77,7 +77,7 @@ class ContainerImovel extends StatelessWidget {
   }
 }
 
-class _TelaImoveisState extends State<TelaImoveis> {
+class _EstoqueState extends State<Estoque> {
   List<dynamic> imoveis = [];
   bool carregando = true;
 

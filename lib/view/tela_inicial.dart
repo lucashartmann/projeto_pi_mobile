@@ -36,17 +36,32 @@ class ContainerAnuncio extends StatelessWidget {
       onTap: () {
         abrirTelaImovel(context, imovel);
       },
+
       child: Container(
         padding: const EdgeInsets.all(10),
         color: const Color.fromRGBO(203, 199, 199, 0.6),
         child: Column(
           children: [
-            if (imagem != null)
-              Image.network(
-                imagem,
-                width: double.infinity,
-                height: 140,
-                fit: BoxFit.cover,
+            // botar icone de coracao por cima da foto e fazer as fotos serem tipo swiper q pode passar para o lado
+            if (imovel['anuncio']['imagens'] != null &&
+                imovel['anuncio']['imagens'].isNotEmpty)
+              SizedBox(
+                height: 200,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: imovel['anuncio']['imagens'].length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Image.network(
+                        imovel['anuncio']['imagens'][index],
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  },
+                ),
               ),
 
             Text("${imovel["anuncio"]["titulo"]}"),
