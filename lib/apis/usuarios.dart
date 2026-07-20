@@ -13,7 +13,7 @@ Future<List<dynamic>?> listarUsuarios() async {
       return null;
     }
 
-    if (resposta.body == null || resposta.body.isEmpty) {
+    if (resposta.body.isEmpty) {
       print("Resposta vazia do servidor");
       return null;
     }

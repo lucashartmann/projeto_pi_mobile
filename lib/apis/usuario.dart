@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-dynamic usuarioLogado = null;
+dynamic usuarioLogado;
 List imoveisCurtidos = [];
 bool logado = false;
 
@@ -21,7 +21,7 @@ dynamic salvarImoveisCurtidos() async {
       return null;
     }
 
-    if (resposta.body == null || resposta.body.isEmpty) {
+    if (resposta.body.isEmpty) {
       print("Resposta vazia do servidor");
       return null;
     }
@@ -74,7 +74,7 @@ dynamic deslogar() async {
       return null;
     }
 
-    if (resposta.body == null || resposta.body.isEmpty) {
+    if (resposta.body.isEmpty) {
       print("Resposta vazia do servidor");
       return null;
     }
