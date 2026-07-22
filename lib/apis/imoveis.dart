@@ -73,7 +73,6 @@ Future<List<dynamic>?> listarImoveisDisponiveis() async {
     final data = jsonDecode(resposta.body);
 
     for (final imovel in data) {
-      debugPrint(imovel["id"]);
       switch (imovel["status"]) {
         case "Venda":
           imovel["valor_aluguel"] = null;

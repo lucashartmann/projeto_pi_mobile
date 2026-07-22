@@ -16,6 +16,59 @@ class TelaLogin extends StatefulWidget {
 final TextEditingController _emailController = TextEditingController();
 final TextEditingController _senhaController = TextEditingController();
 
+void enviarNovaSenha() async {
+  String email = _emailController.text;
+  try {
+    final uri = Uri.parse(
+      "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=recuperar_senha",
+    );
+
+    final resposta = await http.post(
+      uri,
+      headers: {"Content-Type": "application/json", "Cookie": sessionCookie ?? ""},
+      body: jsonEncode({"email": email}),
+    );
+
+    final cookie = resposta.headers["set-cookie"];
+
+    if (cookie != null) {
+      sessionCookie = cookie.split(";").first;
+      debugPrint("Cookie salvo: $sessionCookie");
+    }
+
+    if (resposta.statusCode != 200) {
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
+      return null;
+    }
+
+    final contentType = resposta.headers["content-type"];
+
+    if (contentType == null || !contentType.contains("application/json")) {
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
+      return null;
+    }
+
+    final data = jsonDecode(resposta.body);
+
+    if (data["status"] == "erro") {
+      debugPrint("Usuário não logado: ${data["mensagem"]}");
+      return null;
+    }
+
+    if (data["status"] == "sucesso") {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Senha enviada para o email cadastrado!")));
+        return;
+      }
+  
+  } catch (e) {
+    debugPrint("Erro: $e");
+    return null;
+  }
+}
+
 void fazerLogin(BuildContext context) async {
   String usuario = _emailController.text;
   String senha = _senhaController.text;
@@ -102,11 +155,16 @@ class _TelaLoginState extends State<TelaLogin> {
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
             ),
+            TextButton(onPressed: () => {}, child: const Text("Criar Conta")),
             const SizedBox(height: 16),
             TextField(
               controller: _senhaController,
               decoration: const InputDecoration(labelText: 'Senha'),
               obscureText: true,
+            ),
+            TextButton(
+              onPressed: () => {},
+              child: const Text("Esqueci minha senha"),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -115,6 +173,20 @@ class _TelaLoginState extends State<TelaLogin> {
               },
               child: const Text('Entrar'),
             ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () {
+                fazerLogin(context);
+              },
+              child: const Text('Entrar com Google'),
+            ),
+            const SizedBox(height: 32),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {},
+              child: const Text("Problema com o login"),
+            ),
+            TextButton(onPressed: () {}, child: const Text("Privacidade")),
           ],
         ),
       ),

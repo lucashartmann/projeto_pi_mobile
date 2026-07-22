@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../tela_inicial.dart';
 import '../favoritos.dart';
-import '../opcoes.dart';
-import '../atendimentos_cliente.dart';
-import '../notificacaoes.dart';
 import '../dados_cliente.dart';
 
 class BottomNav extends StatelessWidget {
