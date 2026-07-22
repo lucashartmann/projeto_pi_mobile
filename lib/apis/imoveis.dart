@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'api.dart';
+import 'package:flutter/foundation.dart';
 
 Future<List<dynamic>?> listarImoveis() async {
   try {
@@ -7,18 +9,21 @@ Future<List<dynamic>?> listarImoveis() async {
       "http://10.0.2.2/PHP/projeto-pi-front/php/api/imoveis.php?acao=listar_imoveis",
     );
 
-    final resposta = await http.get(uri);
+    final resposta = await http.get(
+      uri,
+      headers: {"Cookie": sessionCookie ?? ""},
+    );
 
     if (resposta.statusCode != 200) {
-      print("Erro HTTP: ${resposta.statusCode}");
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
       return null;
     }
 
     final contentType = resposta.headers["content-type"];
 
     if (contentType == null || !contentType.contains("application/json")) {
-      print("Resposta não é JSON");
-      print(resposta.body);
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
       return null;
     }
 
@@ -38,7 +43,7 @@ Future<List<dynamic>?> listarImoveis() async {
 
     return data as List<dynamic>;
   } catch (e) {
-    print("Erro: $e");
+    debugPrint("Erro: $e");
     return null;
   }
 }
@@ -48,24 +53,27 @@ Future<List<dynamic>?> listarImoveisDisponiveis() async {
     final uri = Uri.parse(
       "http://10.0.2.2/PHP/projeto-pi-front/php/api/imoveis.php?acao=listar_imoveis_disponiveis",
     );
-    final resposta = await http.get(uri);
+    final resposta = await http.get(
+      uri,
+      headers: {"Cookie": sessionCookie ?? ""},
+    );
     if (resposta.statusCode != 200) {
-      print("Erro HTTP: ${resposta.statusCode}");
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
       return null;
     }
 
     final contentType = resposta.headers["content-type"];
 
     if (contentType == null || !contentType.contains("application/json")) {
-      print("Resposta não é JSON");
-      print(resposta.body);
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
       return null;
     }
 
     final data = jsonDecode(resposta.body);
 
     for (final imovel in data) {
-      print(imovel["id"]);
+      debugPrint(imovel["id"]);
       switch (imovel["status"]) {
         case "Venda":
           imovel["valor_aluguel"] = null;
@@ -92,7 +100,7 @@ Future<List<dynamic>?> listarImoveisDisponiveis() async {
 
     return data as List<dynamic>;
   } catch (e) {
-    print("Falha ao conectar com o backend: $e");
+    debugPrint("Falha ao conectar com o backend: $e");
     return null;
   }
 }
@@ -104,17 +112,20 @@ Future<List<dynamic>?> getDadosImovel(id) async {
           id,
     );
 
-    final resposta = await http.get(uri);
+    final resposta = await http.get(
+      uri,
+      headers: {"Cookie": sessionCookie ?? ""},
+    );
     if (resposta.statusCode != 200) {
-      print("Erro HTTP: ${resposta.statusCode}");
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
       return null;
     }
 
     final contentType = resposta.headers["content-type"];
 
     if (contentType == null || !contentType.contains("application/json")) {
-      print("Resposta não é JSON");
-      print(resposta.body);
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
       return null;
     }
 
@@ -134,7 +145,7 @@ Future<List<dynamic>?> getDadosImovel(id) async {
 
     return data as List<dynamic>;
   } catch (e) {
-    print("Falha ao conectar com o backend: $e");
+    debugPrint("Falha ao conectar com o backend: $e");
     return null;
   }
 }

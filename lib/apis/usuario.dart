@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'api.dart';
+import 'package:flutter/foundation.dart';
 
 dynamic usuarioLogado;
 List imoveisCurtidos = [];
@@ -12,40 +14,43 @@ dynamic salvarImoveisCurtidos() async {
     );
     final resposta = await http.post(
       uri,
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "Cookie": sessionCookie ?? "",
+      },
       body: jsonEncode({"id_imoveis": imoveisCurtidos}),
     );
 
     if (resposta.statusCode != 200) {
-      print("Erro HTTP: ${resposta.statusCode}");
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
       return null;
     }
 
     if (resposta.body.isEmpty) {
-      print("Resposta vazia do servidor");
+      debugPrint("Resposta vazia do servidor");
       return null;
     }
 
     if (resposta.headers["content-type"] == null ||
         !resposta.headers["content-type"]!.contains("application/json")) {
-      print("Resposta não é JSON");
-      print(resposta.body);
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
       return null;
     }
 
     final dados = jsonDecode(resposta.body);
 
     carregarUser();
-    print("Imóveis curtidos salvos com sucesso! $dados.mensagem");
+    debugPrint("Imóveis curtidos salvos com sucesso! $dados.mensagem");
   } catch (err) {
-    print("Erro ao salvar imóveis curtidos: $err");
+    debugPrint("Erro ao salvar imóveis curtidos: $err");
   }
 }
 
 // dynamic curtirImovel(event, imovelId) async{
 //     if (!logado) {
 //         if (!usuarioLogado) {
-//             print ("Você precisa estar logado para curtir um imóvel!");
+//             debugPrint ("Você precisa estar logado para curtir um imóvel!");
 //             return;
 //         }
 //         else {
@@ -54,7 +59,7 @@ dynamic salvarImoveisCurtidos() async {
 //     }
 //     if (imoveisCurtidos.includes(imovelId)) {
 //         imoveisCurtidos.splice(imoveisCurtidos.indexOf(imovelId), 1);
-//         print("Imóvel removido dos curtidos: $imoveisCurtidos");
+//         debugPrint("Imóvel removido dos curtidos: $imoveisCurtidos");
 //         event.target.classList.remove("curtido");
 //         return;
 //     }
@@ -68,64 +73,75 @@ dynamic deslogar() async {
     final uri = Uri.parse(
       "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=deslogar",
     );
-    final resposta = await http.get(uri); // http.post(uri)
+    final resposta = await http.get(
+      uri,
+      headers: {"Cookie": sessionCookie ?? ""},
+    ); // http.post(uri)
     if (resposta.statusCode != 200) {
-      print("Erro HTTP: ${resposta.statusCode}");
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
       return null;
     }
 
     if (resposta.body.isEmpty) {
-      print("Resposta vazia do servidor");
+      debugPrint("Resposta vazia do servidor");
       return null;
     }
 
     if (resposta.headers["content-type"] == null ||
         !resposta.headers["content-type"]!.contains("application/json")) {
-      print("Resposta não é JSON");
-      print(resposta.body);
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
       return null;
     }
 
     usuarioLogado = null;
     imoveisCurtidos = [];
 
-    print("Deslogado com sucesso!");
+    debugPrint("Deslogado com sucesso!");
   } catch (erro) {
-    print("Falha ao conectar com o backend: $erro");
+    debugPrint("Falha ao conectar com o backend: $erro");
     return null;
   }
 }
 
-Future<List<dynamic>?> carregarUser() async {
+Future<Map<String, dynamic>?> carregarUser() async {
   try {
     final uri = Uri.parse(
       "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=get_usuario",
     );
 
-    final resposta = await http.get(uri);
+    final resposta = await http.get(
+      uri,
+      headers: {"Cookie": sessionCookie ?? ""},
+    );
 
     if (resposta.statusCode != 200) {
-      print("Erro HTTP: ${resposta.statusCode}");
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
       return null;
     }
 
     final contentType = resposta.headers["content-type"];
 
     if (contentType == null || !contentType.contains("application/json")) {
-      print("Resposta não é JSON");
-      print(resposta.body);
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
       return null;
     }
 
     final dados = jsonDecode(resposta.body);
 
-    usuarioLogado = dados.usuario;
-    if (usuarioLogado.tipo && usuarioLogado.tipo == "CLIENTE") {
-      imoveisCurtidos = dados.imoveis ?? [];
+    if (dados["status"] == "erro") {
+      debugPrint("Usuário não logado: ${dados["mensagem"]}");
+      return null;
     }
-    return dados as List<dynamic>;
+
+    usuarioLogado = dados["usuario"];
+    if (usuarioLogado["tipo"] != null && usuarioLogado["tipo"] == "CLIENTE") {
+      imoveisCurtidos = dados["imoveis"] ?? [];
+    }
+    return dados;
   } catch (e) {
-    print("Falha ao conectar com o backend: $e");
+    debugPrint("Falha ao conectar com o backend: $e");
     return null;
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 
 Future<List<dynamic>?> listarUsuarios() async {
   try {
@@ -9,19 +10,19 @@ Future<List<dynamic>?> listarUsuarios() async {
     final resposta = await http.get(uri);
 
     if (resposta.statusCode != 200) {
-      print("Erro HTTP: ${resposta.statusCode}");
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
       return null;
     }
 
     if (resposta.body.isEmpty) {
-      print("Resposta vazia do servidor");
+      debugPrint("Resposta vazia do servidor");
       return null;
     }
 
     if (resposta.headers["content-type"] == null ||
         !resposta.headers["content-type"]!.contains("application/json")) {
-      print("Resposta não é JSON");
-      print(resposta.body);
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
       return null;
     }
 
@@ -29,7 +30,7 @@ Future<List<dynamic>?> listarUsuarios() async {
 
     return dados;
   } catch (erro) {
-    print("Falha ao conectar com o backend: $erro");
+    debugPrint("Falha ao conectar com o backend: $erro");
     return null;
   }
 }
