@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'widgets/bottom-nav.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -25,7 +26,10 @@ void enviarNovaSenha() async {
 
     final resposta = await http.post(
       uri,
-      headers: {"Content-Type": "application/json", "Cookie": sessionCookie ?? ""},
+      headers: {
+        "Content-Type": "application/json",
+        "Cookie": sessionCookie ?? "",
+      },
       body: jsonEncode({"email": email}),
     );
 
@@ -57,12 +61,9 @@ void enviarNovaSenha() async {
     }
 
     if (data["status"] == "sucesso") {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Senha enviada para o email cadastrado!")));
-        return;
-      }
-  
+      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Senha enviada para o email cadastrado!")));
+      return;
+    }
   } catch (e) {
     debugPrint("Erro: $e");
     return null;

@@ -10,8 +10,6 @@ class DadosCliente extends StatefulWidget {
 }
 
 class _DadosClienteState extends State<DadosCliente> {
-  
-
   @override
   void initState() {
     super.initState();

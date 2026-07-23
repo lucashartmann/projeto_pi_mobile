@@ -8,9 +8,10 @@ Future<List<dynamic>?> listarProprietarios() async {
     final uri = Uri.parse(
       "http://10.0.2.2/PHP/projeto-pi-front/php/api/proprietarios.php?acao=listar",
     );
-    final resposta = await http.get(uri, headers: {
-      "Cookie": sessionCookie ?? "",
-    });
+    final resposta = await http.get(
+      uri,
+      headers: {"Cookie": sessionCookie ?? ""},
+    );
     if (resposta.statusCode != 200) {
       debugPrint("Erro HTTP: ${resposta.statusCode}");
       return null;

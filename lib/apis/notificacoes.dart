@@ -12,9 +12,10 @@ Future<List<dynamic>?> carregarNotificacoes() async {
     final uri = Uri.parse(
       "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=get_notificacoes",
     );
-    final resposta = await http.get(uri, headers: {
-      "Cookie": sessionCookie ?? "",
-    });
+    final resposta = await http.get(
+      uri,
+      headers: {"Cookie": sessionCookie ?? ""},
+    );
 
     if (resposta.statusCode != 200) {
       debugPrint("Erro HTTP: ${resposta.statusCode}");

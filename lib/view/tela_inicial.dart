@@ -408,22 +408,24 @@ class _TelaInicialState extends State<TelaInicial> {
                           ),
                         ),
                       ),
-                    MasonryGridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                          ),
-                      itemCount: imoveisFiltrados.length,
-                      mainAxisSpacing: 15,
-                      crossAxisSpacing: 15,
-                      itemBuilder: (context, index) {
-                        return ContainerAnuncio(
-                          imovel: imoveisFiltrados[index],
-                        );
-                      },
-                    ),
+                    imoveisFiltrados.isEmpty
+                        ? MasonryGridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                ),
+                            itemCount: imoveisFiltrados.length,
+                            mainAxisSpacing: 15,
+                            crossAxisSpacing: 15,
+                            itemBuilder: (context, index) {
+                              return ContainerAnuncio(
+                                imovel: imoveisFiltrados[index],
+                              );
+                            },
+                          )
+                        : CircularProgressIndicator(),
                   ],
                 ),
               ),

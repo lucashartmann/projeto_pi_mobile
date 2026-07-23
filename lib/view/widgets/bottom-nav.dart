@@ -1,15 +1,40 @@
 import 'package:flutter/material.dart';
+
 import '../tela_inicial.dart';
 import '../favoritos.dart';
 import '../dados_cliente.dart';
+import '../../../apis/notificacoes.dart';
 
-class BottomNav extends StatelessWidget {
+class BottomNav extends StatefulWidget {
   final int currentIndex;
 
   const BottomNav({super.key, this.currentIndex = 0});
 
+  @override
+  State<BottomNav> createState() => BottomNavState();
+}
+
+class BottomNavState extends State<BottomNav> {
+  List<dynamic> notificacoes = [];
+  late final bool temNaoLidas;
+
+  @override
+  void initState() {
+    super.initState();
+    carregar();
+  }
+
+  Future<void> carregar() async {
+    final dados = await carregarNotificacoes();
+
+    setState(() {
+      notificacoes = dados ?? [];
+      temNaoLidas = notificacoes.any((n) => n["lida"] == false);
+    });
+  }
+
   void _navigateTo(BuildContext context, int index) {
-    if (index == currentIndex) {
+    if (index == widget.currentIndex) {
       return;
     }
 
@@ -44,21 +69,29 @@ class BottomNav extends StatelessWidget {
       backgroundColor: const Color.fromRGBO(36, 30, 30, 0.92),
       selectedItemColor: Colors.red,
       unselectedItemColor: Colors.white,
-      currentIndex: currentIndex,
+      currentIndex: widget.currentIndex,
       onTap: (index) => _navigateTo(context, index),
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favoritos'),
-        BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Opções'),
-        BottomNavigationBarItem(
+      items: [
+        const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.favorite),
+          label: 'Favoritos',
+        ),
+        const BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Opções'),
+        const BottomNavigationBarItem(
           icon: Icon(Icons.insert_comment),
           label: 'Atendimentos',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.markunread_sharp),
+          icon: Icon(
+            temNaoLidas ? Icons.notifications : Icons.notifications_none,
+          ),
           label: 'Mensagens',
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Perfil',
+        ),
       ],
     );
   }

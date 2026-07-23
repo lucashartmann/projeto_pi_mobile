@@ -1,4 +1,3 @@
-
 // dynamic formatarValor(valor) {
 //     const formatoMoeda = new Intl.NumberFormat('pt-BR', {
 //         style: 'currency',

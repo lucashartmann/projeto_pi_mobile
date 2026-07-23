@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../apis/imoveis.dart';
+import 'widgets/bottom-nav.dart';
 
 class Estoque extends StatefulWidget {
   const Estoque({super.key});
@@ -114,16 +115,7 @@ class _EstoqueState extends State<Estoque> {
                 return ContainerImovel(imovel: imovel);
               },
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        // fazer a barra ficar sempre na tela sobre o conteúdo
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color.fromARGB(255, 251, 39, 39),
-
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
+      bottomNavigationBar: const BottomNav(currentIndex: 0),
     );
   }
 }
