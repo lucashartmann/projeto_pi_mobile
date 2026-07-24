@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../apis/api.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Favoritos extends StatefulWidget {
   const Favoritos({super.key});
@@ -217,7 +218,7 @@ class _FavoritosState extends State<Favoritos> {
 Future<List<dynamic>?> listarImoveisFavoritados() async {
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=get_favoritos",
+      "${dotenv.get('ADDRESS')}login.php?acao=get_favoritos",
     );
     final resposta = await http.get(
       uri,
@@ -246,7 +247,7 @@ Future<List<dynamic>?> listarImoveisFavoritados() async {
         final imagens = anuncio["imagens"] as List<dynamic>;
 
         for (int i = 0; i < imagens.length; i++) {
-          imagens[i] = "http://10.0.2.2${imagens[i]}";
+          imagens[i] = "${dotenv.get('IPLOCAL')}${imagens[i]}";
         }
       }
     }

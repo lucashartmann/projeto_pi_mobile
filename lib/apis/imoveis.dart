@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<List<dynamic>?> listarImoveis() async {
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/imoveis.php?acao=listar_imoveis",
+      "${dotenv.get('ADDRESS')}imoveis.php?acao=listar_imoveis",
     );
 
     final resposta = await http.get(
@@ -36,7 +37,7 @@ Future<List<dynamic>?> listarImoveis() async {
         final imagens = anuncio["imagens"] as List<dynamic>;
 
         for (int i = 0; i < imagens.length; i++) {
-          imagens[i] = "http://10.0.2.2${imagens[i]}";
+          imagens[i] = "${dotenv.get('IPLOCAL')}${imagens[i]}";
         }
       }
     }
@@ -51,7 +52,7 @@ Future<List<dynamic>?> listarImoveis() async {
 Future<List<dynamic>?> listarImoveisDisponiveis() async {
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/imoveis.php?acao=listar_imoveis_disponiveis",
+      "${dotenv.get('ADDRESS')}imoveis.php?acao=listar_imoveis_disponiveis",
     );
     final resposta = await http.get(
       uri,
@@ -92,7 +93,7 @@ Future<List<dynamic>?> listarImoveisDisponiveis() async {
         final imagens = anuncio["imagens"] as List<dynamic>;
 
         for (int i = 0; i < imagens.length; i++) {
-          imagens[i] = "http://10.0.2.2${imagens[i]}";
+          imagens[i] = "${dotenv.get('IPLOCAL')}${imagens[i]}";
         }
       }
     }
@@ -104,11 +105,10 @@ Future<List<dynamic>?> listarImoveisDisponiveis() async {
   }
 }
 
-Future<List<dynamic>?> getDadosImovel(id) async {
+Future<List<dynamic>?> getDadosImovel(int id) async {
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/imoveis.php?acao=get_dados_imovel&id=" +
-          id,
+      "${dotenv.get('ADDRESS')}imoveis.php?acao=get_dados_imovel&id=$id",
     );
 
     final resposta = await http.get(
@@ -137,7 +137,7 @@ Future<List<dynamic>?> getDadosImovel(id) async {
     //     final imagens = anuncio["imagens"] as List<dynamic>;
 
     //     for (int i = 0; i < imagens.length; i++) {
-    //       imagens[i] = "http://10.0.2.2${imagens[i]}";
+    //       imagens[i] = "${dotenv.get('IPLOCAL')}${imagens[i]}";
     //     }
     //   }
     // }

@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<List<dynamic>?> listarProprietarios() async {
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/proprietarios.php?acao=listar",
+      "${dotenv.get('ADDRESS')}proprietarios.php?acao=listar",
     );
     final resposta = await http.get(
       uri,

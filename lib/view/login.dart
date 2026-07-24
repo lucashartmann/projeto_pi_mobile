@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'tela_inicial.dart';
 import 'cadastro_imovel.dart';
 import '../apis/api.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TelaLogin extends StatefulWidget {
   const TelaLogin({super.key});
@@ -21,7 +22,7 @@ void enviarNovaSenha() async {
   String email = _emailController.text;
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=recuperar_senha",
+      "${dotenv.get('ADDRESS')}login.php?acao=recuperar_senha",
     );
 
     final resposta = await http.post(
@@ -76,7 +77,7 @@ void fazerLogin(BuildContext context) async {
 
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=login",
+      "${dotenv.get('ADDRESS')}login.php?acao=login",
     );
     final resposta = await http.post(
       uri,

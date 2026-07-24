@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 dynamic usuarioLogado;
 List imoveisCurtidos = [];
@@ -10,7 +11,7 @@ bool logado = false;
 dynamic salvarImoveisCurtidos() async {
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=favoritar_imoveis",
+      "${dotenv.get('ADDRESS')}login.php?acao=favoritar_imoveis",
     );
     final resposta = await http.post(
       uri,
@@ -71,7 +72,7 @@ dynamic salvarImoveisCurtidos() async {
 dynamic deslogar() async {
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=deslogar",
+      "${dotenv.get('ADDRESS')}login.php?acao=deslogar",
     );
     final resposta = await http.get(
       uri,
@@ -107,7 +108,7 @@ dynamic deslogar() async {
 Future<Map<String, dynamic>?> carregarUser() async {
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=get_usuario",
+      "${dotenv.get('ADDRESS')}login.php?acao=get_usuario",
     );
 
     final resposta = await http.get(

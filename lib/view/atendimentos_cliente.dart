@@ -4,6 +4,7 @@ import '.././apis/api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'widgets/bottom-nav.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AtendimentosCliente extends StatefulWidget {
   const AtendimentosCliente({super.key});
@@ -68,7 +69,7 @@ class _AtendimentosClienteState extends State<AtendimentosCliente> {
 Future<List<dynamic>?> listarAtendimentos() async {
   try {
     final uri = Uri.parse(
-      "http://10.0.2.2/PHP/projeto-pi-front/php/api/login.php?acao=get_atendimentos",
+      "${dotenv.get('ADDRESS')}login.php?acao=get_atendimentos",
     );
 
     final resposta = await http.get(
@@ -98,7 +99,7 @@ Future<List<dynamic>?> listarAtendimentos() async {
         final imagens = anuncio["imagens"] as List<dynamic>;
 
         for (int i = 0; i < imagens.length; i++) {
-          imagens[i] = "http://10.0.2.2${imagens[i]}";
+          imagens[i] = "${dotenv.get('IPLOCAL')}${imagens[i]}";
         }
       }
     }
