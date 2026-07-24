@@ -16,7 +16,7 @@ class BottomNav extends StatefulWidget {
 
 class BottomNavState extends State<BottomNav> {
   List<dynamic> notificacoes = [];
-  late final bool temNaoLidas;
+  bool temNaoLidas = false;
 
   @override
   void initState() {
