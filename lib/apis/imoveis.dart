@@ -4,6 +4,88 @@ import 'api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+dynamic destacarImovel(int imovelId) async {
+  try {
+    final uri = Uri.parse(
+      "${dotenv.get('ADDRESS')}imoveis.php?acao=destacar&id=$imovelId",
+    );
+    final resposta = await http.post(
+      uri,
+      headers: {
+        "Content-Type": "application/json",
+        "Cookie": sessionCookie ?? "",
+      },
+    );
+
+    if (resposta.statusCode != 200) {
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
+      return null;
+    }
+
+    if (resposta.body.isEmpty) {
+      debugPrint("Resposta vazia do servidor");
+      return null;
+    }
+
+    if (resposta.headers["content-type"] == null ||
+        !resposta.headers["content-type"]!.contains("application/json")) {
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
+      return null;
+    }
+
+    final dados = jsonDecode(resposta.body);
+
+    debugPrint("Imóvel destacado com sucesso! $dados.mensagem");
+
+    return dados;
+  } catch (erro) {
+    debugPrint("Falha ao conectar com o backend: $erro");
+    return null;
+  }
+}
+
+dynamic excluirImovel(int imovelId) async {
+  try {
+    final uri = Uri.parse(
+      "${dotenv.get('ADDRESS')}imoveis.php?acao=apagar&id=$imovelId",
+    );
+    final resposta = await http.post(
+      uri,
+      headers: {
+        "Content-Type": "application/json",
+        "Cookie": sessionCookie ?? "",
+      },
+    );
+
+    if (resposta.statusCode != 200) {
+      debugPrint("Erro HTTP: ${resposta.statusCode}");
+      return null;
+    }
+
+    if (resposta.body.isEmpty) {
+      debugPrint("Resposta vazia do servidor");
+      return null;
+    }
+
+    if (resposta.headers["content-type"] == null ||
+        !resposta.headers["content-type"]!.contains("application/json")) {
+      debugPrint("Resposta não é JSON");
+      debugPrint(resposta.body);
+      return null;
+    }
+
+    final dados = jsonDecode(resposta.body);
+
+    debugPrint("Imóvel destacado com sucesso! $dados.mensagem");
+
+    return dados;
+  } catch (erro) {
+    debugPrint("Falha ao conectar com o backend: $erro");
+    return null;
+  }
+}
+
 Future<List<dynamic>?> listarImoveis() async {
   try {
     final uri = Uri.parse(
