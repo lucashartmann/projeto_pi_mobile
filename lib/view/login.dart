@@ -75,9 +75,7 @@ void fazerLogin(BuildContext context) async {
   String senha = _senhaController.text;
 
   try {
-    final uri = Uri.parse(
-      "${dotenv.get('ADDRESS')}login.php?acao=login",
-    );
+    final uri = Uri.parse("${dotenv.get('ADDRESS')}login.php?acao=login");
     final resposta = await http.post(
       uri,
       headers: {"Content-Type": "application/json"},

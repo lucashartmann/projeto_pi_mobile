@@ -43,6 +43,8 @@ dynamic salvarImoveisCurtidos() async {
 
     carregarUser();
     debugPrint("Imóveis curtidos salvos com sucesso! $dados.mensagem");
+
+    return dados;
   } catch (err) {
     debugPrint("Erro ao salvar imóveis curtidos: $err");
   }
@@ -71,9 +73,7 @@ dynamic salvarImoveisCurtidos() async {
 
 dynamic deslogar() async {
   try {
-    final uri = Uri.parse(
-      "${dotenv.get('ADDRESS')}login.php?acao=deslogar",
-    );
+    final uri = Uri.parse("${dotenv.get('ADDRESS')}login.php?acao=deslogar");
     final resposta = await http.get(
       uri,
       headers: {"Cookie": sessionCookie ?? ""},
@@ -107,9 +107,7 @@ dynamic deslogar() async {
 
 Future<Map<String, dynamic>?> carregarUser() async {
   try {
-    final uri = Uri.parse(
-      "${dotenv.get('ADDRESS')}login.php?acao=get_usuario",
-    );
+    final uri = Uri.parse("${dotenv.get('ADDRESS')}login.php?acao=get_usuario");
 
     final resposta = await http.get(
       uri,

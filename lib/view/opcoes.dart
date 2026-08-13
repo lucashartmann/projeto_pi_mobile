@@ -11,12 +11,8 @@ class _CadastroImovelState extends State<CadastroImovel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cadastro de Imóvel'),
-      ),
-      body: const Center(
-        child: Text('Tela de cadastro de imóvel'),
-      ),
+      appBar: AppBar(title: const Text('Cadastro de Imóvel')),
+      body: const Center(child: Text('Tela de cadastro de imóvel')),
     );
   }
 }
