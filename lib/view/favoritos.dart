@@ -6,7 +6,6 @@ import 'dados_imovel.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../apis/api.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Favoritos extends StatefulWidget {
