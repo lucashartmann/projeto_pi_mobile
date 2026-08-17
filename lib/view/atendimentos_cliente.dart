@@ -105,7 +105,7 @@ Future<List<dynamic>?> listarAtendimentos() async {
 
     return data as List<dynamic>;
   } catch (e) {
-    debugPrint("Erro: $e");
+    debugPrint("ERRO: atendimentos_cliente.dart - listarAtendimentos: $e");
     return null;
   }
 }

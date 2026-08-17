@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'view/tela_inicial.dart';
+import 'package:projeto_pi_mobile/view/tela_inicial.dart';
+import 'package:projeto_pi_mobile/view/cadastro_imovel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
@@ -19,7 +19,7 @@ class MeuApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Imóveis',
-      home: const TelaInicial(),
+      home: const CadastroImovel(),
       debugShowCheckedModeBanner: false,
     );
   }

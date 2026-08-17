@@ -5,20 +5,6 @@ import 'dados_imovel.dart';
 import 'dart:async';
 import 'widgets/bottom-nav.dart';
 
-class TelaInicial extends StatefulWidget {
-  const TelaInicial({super.key});
-
-  @override
-  State<TelaInicial> createState() => _TelaInicialState();
-}
-
-void abrirTelaImovel(BuildContext context, Map<String, dynamic> imovel) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => DadosImovel(imovel: imovel)),
-  );
-}
-
 class ContainerAnuncio extends StatefulWidget {
   final Map<String, dynamic> imovel;
 
@@ -49,13 +35,14 @@ class _ContainerAnuncioState extends State<ContainerAnuncio> {
   Widget build(BuildContext context) {
     final imagens = _imagensDoAnuncio();
 
-    // @Preview(
-
-    // )
-
     return GestureDetector(
       onTap: () {
-        abrirTelaImovel(context, widget.imovel);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DadosImovel(imovel: widget.imovel),
+          ),
+        );
       },
 
       child: Container(
@@ -173,263 +160,179 @@ class _ContainerAnuncioState extends State<ContainerAnuncio> {
   }
 }
 
+class TelaInicial extends StatefulWidget {
+  const TelaInicial({super.key});
+
+  @override
+  State<TelaInicial> createState() => _TelaInicialState();
+}
+
 class _TelaInicialState extends State<TelaInicial> {
-  final PageController _pageController = PageController();
-  Timer? _timer;
-  int imagemAtual = 0;
-  List<dynamic> imoveis = [];
-  List<dynamic> imoveisFiltrados = [];
-  bool carregando = true;
+  late Future<List<dynamic>?> imoveis;
+  late Future<List<dynamic>?> imoveisFiltrados;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (imoveisFiltrados.isEmpty) return;
-
-      imagemAtual++;
-
-      if (imagemAtual >= imoveisFiltrados.length) {
-        imagemAtual = 0;
-      }
-
-      _pageController.animateToPage(
-        imagemAtual,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    });
-    carregar();
-  }
-
-  Future<void> carregar() async {
-    final dados = await listarImoveisDisponiveis();
-
-    setState(() {
-      imoveis = dados ?? [];
-      imoveisFiltrados = List<dynamic>.from(imoveis);
-      carregando = false;
-    });
+    imoveis = listarImoveisDisponiveis();
+    imoveisFiltrados = imoveis;
   }
 
   void filtrar(String valor) {
     final termo = valor.trim().toLowerCase();
 
     setState(() {
-      if (termo.isEmpty) {
-        imoveisFiltrados = List<dynamic>.from(imoveis);
-        imagemAtual = 0;
-        return;
-      }
-
-      imoveisFiltrados = imoveis.where((imovel) {
-        if (imovel is! Map<String, dynamic>) {
-          return false;
+      imoveisFiltrados = imoveis.then((lista) {
+        if (lista == null || termo.isEmpty) {
+          return lista ?? [];
         }
 
-        final anuncio = imovel['anuncio'];
-        final endereco = imovel['endereco'];
+        return lista.where((imovel) {
+          final anuncio = imovel["anuncio"] ?? {};
+          final endereco = imovel["endereco"] ?? {};
 
-        final titulo = anuncio is Map<String, dynamic>
-            ? (anuncio['titulo'] ?? '').toString().toLowerCase()
-            : '';
-        final descricao = anuncio is Map<String, dynamic>
-            ? (anuncio['descricao'] ?? '').toString().toLowerCase()
-            : '';
-        final bairro = endereco is Map<String, dynamic>
-            ? (endereco['bairro'] ?? '').toString().toLowerCase()
-            : '';
-        final cep = endereco is Map<String, dynamic>
-            ? (endereco['cep'] ?? '').toString().toLowerCase()
-            : '';
-        final categoria = (imovel['categoria'] ?? '').toString().toLowerCase();
-        final status = (imovel['status'] ?? '').toString().toLowerCase();
+          final titulo = anuncio["titulo"]?.toString().toLowerCase() ?? "";
 
-        return titulo.contains(termo) ||
-            descricao.contains(termo) ||
-            bairro.contains(termo) ||
-            cep.contains(termo) ||
-            categoria.contains(termo) ||
-            status.contains(termo);
-      }).toList();
+          final rua = endereco["rua"]?.toString().toLowerCase() ?? "";
 
-      imagemAtual = 0;
-      if (_pageController.hasClients) {
-        _pageController.jumpToPage(0);
-      }
+          final bairro = endereco["bairro"]?.toString().toLowerCase() ?? "";
+
+          final cidade = endereco["cidade"]?.toString().toLowerCase() ?? "";
+
+          return titulo.contains(termo) ||
+              rua.contains(termo) ||
+              bairro.contains(termo) ||
+              cidade.contains(termo);
+        }).toList();
+      });
     });
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final quantidadeEmDestaque = imoveis.length < 5 ? imoveis.length : 5;
-    final quantidadeFiltradaEmDestaque = imoveisFiltrados.length < 5
-        ? imoveisFiltrados.length
-        : 5;
-
     return Scaffold(
-      body: carregando
-          ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: TextField(
-                        onChanged: (value) {
-                          filtrar(value);
-                        },
-                        decoration: const InputDecoration(
-                          hintText: 'Pesquisar imóveis...',
-                          prefixIcon: Icon(Icons.search),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    if (quantidadeFiltradaEmDestaque > 0)
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: SizedBox(
-                          height: 200,
-                          width: MediaQuery.of(context).size.width,
-                          child: Stack(
-                            children: [
-                              PageView.builder(
-                                controller: _pageController,
-                                itemCount: imoveisFiltrados.length,
-                                onPageChanged: (index) {
-                                  setState(() {
-                                    imagemAtual = index;
-                                  });
-                                },
-                                itemBuilder: (context, index) {
-                                  return Image.network(
-                                    imoveisFiltrados[index]["anuncio"]["imagens"][0],
-                                    width: double.infinity,
-                                    height: 200,
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              ),
-                              Positioned(
-                                left: 10,
-                                top: 75,
-                                child: IconButton(
-                                  onPressed: () {
-                                    if (imagemAtual > 0) {
-                                      _pageController.previousPage(
-                                        duration: const Duration(
-                                          milliseconds: 300,
-                                        ),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    } else {
-                                      _pageController.animateToPage(
-                                        imoveisFiltrados.length - 1,
-                                        duration: const Duration(
-                                          milliseconds: 300,
-                                        ),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    }
-                                  },
-                                  icon: const Icon(
-                                    Icons.arrow_back_ios,
-                                    color: Colors.white,
-                                    size: 35,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(10),
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Pesquisar',
+                prefixIcon: Icon(Icons.search),
+              ),
+              onChanged: (valor) {
+                filtrar(valor);
+              },
+            ),
+            SizedBox(height: 20),
+            SizedBox(
+              height: 250,
+              child: FutureBuilder(
+                future: imoveis,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return const Center(child: CircularProgressIndicator());
+                    case ConnectionState.active:
+                      return const Center(child: CircularProgressIndicator());
+                    case ConnectionState.done:
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            'Erro ao carregar dados: ${snapshot.error}',
+                          ),
+                        );
+                      }
+                      final imoveis = snapshot.data ?? [];
+                      if (imoveis.isEmpty) {
+                        return const Center(
+                          child: Text('Nenhum imóvel encontrado.'),
+                        );
+                      }
+                      return SizedBox(
+                        height: 60,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: imoveis
+                                .take(5)
+                                .map(
+                                  (imovel) => Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: SizedBox(
+                                      width: 180,
+                                      child: ContainerAnuncio(imovel: imovel),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 10,
-                                top: 75,
-                                child: IconButton(
-                                  onPressed: () {
-                                    if (imagemAtual <
-                                        imoveisFiltrados.length - 1) {
-                                      _pageController.nextPage(
-                                        duration: const Duration(
-                                          milliseconds: 300,
-                                        ),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    } else {
-                                      _pageController.animateToPage(
-                                        0,
-                                        duration: const Duration(
-                                          milliseconds: 300,
-                                        ),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    }
-                                  },
-                                  icon: const Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Colors.white,
-                                    size: 35,
-                                  ),
-                                ),
-                              ),
-                            ],
+                                )
+                                .toList(),
                           ),
                         ),
-                      ),
-                    if (quantidadeFiltradaEmDestaque > 0)
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: SizedBox(
-                          height: 450,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: quantidadeFiltradaEmDestaque,
-                            itemBuilder: (context, index) {
-                              final imovel = imoveisFiltrados[index];
-
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 12,
-                                  right: 8,
-                                ),
-                                child: SizedBox(
-                                  width: 260,
-                                  child: ContainerAnuncio(imovel: imovel),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    imoveisFiltrados.isEmpty
-                        ? MasonryGridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                ),
-                            itemCount: imoveisFiltrados.length,
-                            mainAxisSpacing: 15,
-                            crossAxisSpacing: 15,
-                            itemBuilder: (context, index) {
-                              return ContainerAnuncio(
-                                imovel: imoveisFiltrados[index],
-                              );
-                            },
-                          )
-                        : CircularProgressIndicator(),
-                  ],
-                ),
+                      );
+                    default:
+                      return const Center(
+                        child: Text('Erro ao carregar dados'),
+                      );
+                  }
+                },
               ),
             ),
+
+            SizedBox(height: 15),
+            SizedBox(
+              height: 1200,
+              child: FutureBuilder(
+                future: imoveisFiltrados,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return const Center(child: CircularProgressIndicator());
+                    case ConnectionState.active:
+                      return const Center(child: CircularProgressIndicator());
+                    case ConnectionState.done:
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            'Erro ao carregar dados: ${snapshot.error}',
+                          ),
+                        );
+                      }
+                      final imoveis = snapshot.data ?? [];
+                      if (imoveis.isEmpty) {
+                        return const Center(
+                          child: Text('Nenhum imóvel encontrado.'),
+                        );
+                      }
+                      return Expanded(
+                        child: MasonryGridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 4,
+                          crossAxisSpacing: 4,
+                          itemCount: imoveis.length,
+                          itemBuilder: (context, index) {
+                            return ContainerAnuncio(imovel: imoveis[index]);
+                          },
+                        ),
+                      );
+                    default:
+                      return const Center(
+                        child: Text('Erro ao carregar dados'),
+                      );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: const BottomNav(currentIndex: 0),
     );
   }

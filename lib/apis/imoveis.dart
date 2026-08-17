@@ -4,6 +4,32 @@ import 'api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+List<dynamic>? _extrairLista(dynamic payload, {required String origem}) {
+  if (payload is List<dynamic>) {
+    return payload;
+  }
+
+  if (payload is Map<String, dynamic>) {
+    const chavesPossiveis = ['data', 'dados', 'imoveis', 'resultado', 'items'];
+
+    for (final chave in chavesPossiveis) {
+      final valor = payload[chave];
+      if (valor is List<dynamic>) {
+        return valor;
+      }
+    }
+
+    final mensagem = payload['mensagem'] ?? payload['erro'] ?? payload['error'];
+    if (mensagem != null) {
+      debugPrint('Mensagem do backend em $origem: $mensagem');
+    }
+  }
+
+  debugPrint('Formato inesperado em $origem: ${payload.runtimeType}');
+  debugPrint('Payload bruto em $origem: $payload');
+  return null;
+}
+
 dynamic destacarImovel(int imovelId) async {
   try {
     final uri = Uri.parse(
@@ -98,7 +124,8 @@ Future<List<dynamic>?> listarImoveis() async {
     );
 
     if (resposta.statusCode != 200) {
-      debugPrint("Erro HTTP: ${resposta.statusCode}");
+      debugPrint("Erro HTTP em listarImoveis: ${resposta.statusCode}");
+      debugPrint("Corpo da resposta: ${resposta.body}");
       return null;
     }
 
@@ -110,7 +137,12 @@ Future<List<dynamic>?> listarImoveis() async {
       return null;
     }
 
-    final data = jsonDecode(resposta.body);
+    final payload = jsonDecode(resposta.body);
+    final data = _extrairLista(payload, origem: 'listarImoveis');
+
+    if (data == null) {
+      return null;
+    }
 
     for (final imovel in data) {
       final anuncio = imovel["anuncio"];
@@ -124,9 +156,9 @@ Future<List<dynamic>?> listarImoveis() async {
       }
     }
 
-    return data as List<dynamic>;
+    return data;
   } catch (e) {
-    debugPrint("Erro: $e");
+    debugPrint("ERRO: imoveis.dart - listarImoveis: $e");
     return null;
   }
 }
@@ -134,14 +166,17 @@ Future<List<dynamic>?> listarImoveis() async {
 Future<List<dynamic>?> listarImoveisDisponiveis() async {
   try {
     final uri = Uri.parse(
-      "${dotenv.get('ADDRESS')}imoveis.php?acao=listar_imoveis_disponiveis",
+      "${dotenv.get('ADDRESS')}imoveis.php?acao=listar_disponiveis",
     );
     final resposta = await http.get(
       uri,
       headers: {"Cookie": sessionCookie ?? ""},
     );
     if (resposta.statusCode != 200) {
-      debugPrint("Erro HTTP: ${resposta.statusCode}");
+      debugPrint(
+        "Erro HTTP em listarImoveisDisponiveis: ${resposta.statusCode}",
+      );
+      debugPrint("Corpo da resposta: ${resposta.body}");
       return null;
     }
 
@@ -153,7 +188,17 @@ Future<List<dynamic>?> listarImoveisDisponiveis() async {
       return null;
     }
 
-    final data = jsonDecode(resposta.body);
+    if (resposta.body.isEmpty) {
+      debugPrint("Resposta vazia do servidor");
+      return [];
+    }
+
+    final List<dynamic> data = jsonDecode(resposta.body);
+
+    if (data.isEmpty) {
+      debugPrint("Nenhum imóvel disponível encontrado");
+      return [];
+    }
 
     for (final imovel in data) {
       switch (imovel["status"]) {
@@ -180,14 +225,14 @@ Future<List<dynamic>?> listarImoveisDisponiveis() async {
       }
     }
 
-    return data as List<dynamic>;
+    return data;
   } catch (e) {
     debugPrint("Falha ao conectar com o backend: $e");
     return null;
   }
 }
 
-Future<List<dynamic>?> getDadosImovel(int id) async {
+Future<Map<String, dynamic>?> getDadosImovel(int id) async {
   try {
     final uri = Uri.parse(
       "${dotenv.get('ADDRESS')}imoveis.php?acao=get_dados_imovel&id=$id",
@@ -198,7 +243,8 @@ Future<List<dynamic>?> getDadosImovel(int id) async {
       headers: {"Cookie": sessionCookie ?? ""},
     );
     if (resposta.statusCode != 200) {
-      debugPrint("Erro HTTP: ${resposta.statusCode}");
+      debugPrint("Erro HTTP em getDadosImovel: ${resposta.statusCode}");
+      debugPrint("Corpo da resposta: ${resposta.body}");
       return null;
     }
 
@@ -210,7 +256,17 @@ Future<List<dynamic>?> getDadosImovel(int id) async {
       return null;
     }
 
-    final data = jsonDecode(resposta.body);
+    if (resposta.body.isEmpty) {
+      debugPrint("Resposta vazia do servidor");
+      return null;
+    }
+
+    final Map<String, dynamic> data = json.decode(resposta.body);
+
+    // if (data.isEmpty) {
+    //   debugPrint("Nenhum dado encontrado para o imóvel com ID $id");
+    //   return null;
+    // }
 
     // for (final imovel in data) {
     //   final anuncio = imovel["anuncio"];
@@ -224,7 +280,7 @@ Future<List<dynamic>?> getDadosImovel(int id) async {
     //   }
     // }
 
-    return data as List<dynamic>;
+    return data;
   } catch (e) {
     debugPrint("Falha ao conectar com o backend: $e");
     return null;

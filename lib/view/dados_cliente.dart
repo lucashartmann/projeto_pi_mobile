@@ -23,12 +23,15 @@ class _DadosClienteState extends State<DadosCliente> {
 
   void _verificarUsuario() async {
     final usuario = usuarioLogado ?? await carregarUser();
-    debugPrint(usuario);
+    // debugPrint(JsonDecode(usuario));
     if (usuario == null) {
-      Navigator.pushReplacement(
+      if (!context.mounted) {
+        debugPrint("Context não montado");
+        return;
+      }
+      Navigator.of(
         context,
-        MaterialPageRoute(builder: (context) => const TelaLogin()),
-      );
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const TelaLogin()));
     }
   }
 

@@ -7,7 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 Future<List<dynamic>?> getUsuario(int id) async {
   try {
     final uri = Uri.parse(
-      "${dotenv.get('ADDRESS')}usuarios.php?acao=buscar&id=${id}",
+      "${dotenv.get('ADDRESS')}usuarios.php?acao=buscar&id=$id",
     );
     final resposta = await http.get(
       uri,
@@ -58,7 +58,7 @@ Future<List<dynamic>?> listarPessoas(String tipo) async {
 
     return data as List<dynamic>;
   } catch (error) {
-    debugPrint("Erro: $error");
+    debugPrint("ERRO: usuarios.dart - listarPessoas: $error");
     return null;
   }
 }

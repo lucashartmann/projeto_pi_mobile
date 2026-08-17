@@ -47,7 +47,7 @@ Future<List<dynamic>?> carregarNotificacoes() async {
 
     return data as List<dynamic>;
   } catch (e) {
-    debugPrint("Erro: $e");
+    debugPrint("ERRO: notificacoes.dart - carregarNotificacoes: $e");
     return null;
   }
 }

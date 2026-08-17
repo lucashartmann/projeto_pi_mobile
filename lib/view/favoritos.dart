@@ -253,7 +253,7 @@ Future<List<dynamic>?> listarImoveisFavoritados() async {
 
     return data as List<dynamic>;
   } catch (e) {
-    debugPrint("Erro: $e");
+    debugPrint("ERRO: favoritos.dart - listarImoveisFavoritados: $e");
     return null;
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'widgets/bottom-nav.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'tela_inicial.dart';
-import 'cadastro_imovel.dart';
+import 'package:projeto_pi_mobile/view/tela_inicial.dart';
+import 'package:projeto_pi_mobile/view/cadastro_imovel.dart';
 import '../apis/api.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -14,126 +14,134 @@ class TelaLogin extends StatefulWidget {
   State<TelaLogin> createState() => _TelaLoginState();
 }
 
-final TextEditingController _emailController = TextEditingController();
-final TextEditingController _senhaController = TextEditingController();
+class _TelaLoginState extends State<TelaLogin> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _senhaController = TextEditingController();
 
-void enviarNovaSenha() async {
-  String email = _emailController.text;
-  try {
-    final uri = Uri.parse(
-      "${dotenv.get('ADDRESS')}login.php?acao=recuperar_senha",
-    );
+  void enviarNovaSenha() async {
+    String email = _emailController.text;
+    try {
+      final uri = Uri.parse(
+        "${dotenv.get('ADDRESS')}login.php?acao=recuperar_senha",
+      );
 
-    final resposta = await http.post(
-      uri,
-      headers: {
-        "Content-Type": "application/json",
-        "Cookie": sessionCookie ?? "",
-      },
-      body: jsonEncode({"email": email}),
-    );
+      final resposta = await http.post(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Cookie": sessionCookie ?? "",
+        },
+        body: jsonEncode({"email": email}),
+      );
 
-    final cookie = resposta.headers["set-cookie"];
+      final cookie = resposta.headers["set-cookie"];
 
-    if (cookie != null) {
-      sessionCookie = cookie.split(";").first;
-      debugPrint("Cookie salvo: $sessionCookie");
-    }
+      if (cookie != null) {
+        sessionCookie = cookie.split(";").first;
+        debugPrint("Cookie salvo: $sessionCookie");
+      }
 
-    if (resposta.statusCode != 200) {
-      debugPrint("Erro HTTP: ${resposta.statusCode}");
-      return null;
-    }
+      if (resposta.statusCode != 200) {
+        debugPrint("Erro HTTP: ${resposta.statusCode}");
+        return null;
+      }
 
-    final contentType = resposta.headers["content-type"];
+      final contentType = resposta.headers["content-type"];
 
-    if (contentType == null || !contentType.contains("application/json")) {
-      debugPrint("Resposta não é JSON");
-      debugPrint(resposta.body);
-      return null;
-    }
+      if (contentType == null || !contentType.contains("application/json")) {
+        debugPrint("Resposta não é JSON");
+        debugPrint(resposta.body);
+        return null;
+      }
 
-    final data = jsonDecode(resposta.body);
+      final data = jsonDecode(resposta.body);
 
-    if (data["status"] == "erro") {
-      debugPrint("Usuário não logado: ${data["mensagem"]}");
-      return null;
-    }
+      if (data["status"] == "erro") {
+        debugPrint("Usuário não logado: ${data["mensagem"]}");
+        return null;
+      }
 
-    if (data["status"] == "sucesso") {
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Senha enviada para o email cadastrado!")));
-      return;
-    }
-  } catch (e) {
-    debugPrint("Erro: $e");
-    return null;
-  }
-}
-
-void fazerLogin(BuildContext context) async {
-  String usuario = _emailController.text;
-  String senha = _senhaController.text;
-
-  try {
-    final uri = Uri.parse("${dotenv.get('ADDRESS')}login.php?acao=login");
-    final resposta = await http.post(
-      uri,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"usuario": usuario, "senha": senha}),
-    );
-
-    final cookie = resposta.headers["set-cookie"];
-
-    if (cookie != null) {
-      sessionCookie = cookie.split(";").first;
-      debugPrint("Cookie salvo: $sessionCookie");
-    }
-
-    if (resposta.statusCode != 200) {
-      debugPrint("Erro HTTP: ${resposta.statusCode}");
-      return null;
-    }
-
-    final contentType = resposta.headers["content-type"];
-
-    if (contentType == null || !contentType.contains("application/json")) {
-      debugPrint("Resposta não é JSON");
-      debugPrint(resposta.body);
-      return null;
-    }
-
-    final data = jsonDecode(resposta.body);
-
-    if (data["status"] == "erro") {
-      debugPrint("Usuário não logado: ${data["mensagem"]}");
-      return null;
-    }
-
-    if (data["status"] == "sucesso") {
-      if (data["usuario"]["tipo"] == "CLIENTE") {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const TelaInicial()),
-        );
+      if (data["status"] == "sucesso") {
+        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Senha enviada para o email cadastrado!")));
         return;
       }
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const CadastroImovel()),
-      );
-      return;
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Login invalido!")));
+    } catch (e) {
+      debugPrint("ERRO: login.dart - enviarNovaSenha: $e");
+      return null;
     }
-  } catch (e) {
-    debugPrint("Erro: $e");
-    return null;
   }
-}
 
-class _TelaLoginState extends State<TelaLogin> {
+  Future<void> fazerLogin(BuildContext context) async {
+    String usuario = _emailController.text;
+    String senha = _senhaController.text;
+
+    try {
+      final uri = Uri.parse("${dotenv.get('ADDRESS')}login.php?acao=login");
+      final resposta = await http.post(
+        uri,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"usuario": usuario, "senha": senha}),
+      );
+
+      final cookie = resposta.headers["set-cookie"];
+
+      if (cookie != null) {
+        sessionCookie = cookie.split(";").first;
+        debugPrint("Cookie salvo: $sessionCookie");
+      }
+
+      if (resposta.statusCode != 200) {
+        debugPrint("Erro HTTP: ${resposta.statusCode}");
+        return;
+      }
+
+      final contentType = resposta.headers["content-type"];
+
+      if (contentType == null || !contentType.contains("application/json")) {
+        debugPrint("Resposta não é JSON");
+        debugPrint(resposta.body);
+        return;
+      }
+
+      debugPrint(resposta.body);
+
+      // Formato dos dado {"status":"sucesso","usuario":{"id":5,"nome":"Gabriel Ribeiro Santos","tipo":"ADMIN"}}
+
+      Map<String, dynamic> data = jsonDecode(resposta.body);
+
+      if (data["status"] == "sucesso") {
+        final tipoUsuario = data["usuario"]["tipo"];
+
+        debugPrint("Tipo de usuário: $tipoUsuario");
+
+        if (!context.mounted) {
+          debugPrint("Context não montado");
+          return;
+        }
+
+        if (tipoUsuario == "CLIENTE") {
+          debugPrint("Cliente!");
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const TelaInicial()),
+          );
+          return;
+        }
+
+        if (tipoUsuario == "ADMIN") {
+          debugPrint("ADMIN!");
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => CadastroImovel()),
+          );
+          return;
+        }
+        debugPrint("Tipo de usuário desconhecido: $tipoUsuario");
+      }
+    } catch (e) {
+      debugPrint("ERRO: login.dart - fazerLogin: $e");
+      return;
+    }
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
