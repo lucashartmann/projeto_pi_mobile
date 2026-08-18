@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../apis/notificacoes.dart';
+import 'widgets/bottom-nav.dart';
 
 class Notificacoes extends StatefulWidget {
   const Notificacoes({super.key});
@@ -43,6 +44,7 @@ class _NotificacoesState extends State<Notificacoes> {
                 },
               ),
       ),
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
     );
   }
 }

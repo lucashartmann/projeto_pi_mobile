@@ -37,11 +37,10 @@ class _ContainerAnuncioState extends State<ContainerAnuncio> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => DadosImovel(imovel: widget.imovel),
-          ),
+          '/dados_imovel',
+          arguments: widget.imovel,
         );
       },
 

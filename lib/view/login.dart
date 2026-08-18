@@ -148,6 +148,13 @@ class _TelaLoginState extends State<TelaLogin> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _emailController.text = 'administrador1@outlook.com';
+    _senhaController.text = 'Administrador1#';
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
@@ -195,7 +202,7 @@ class _TelaLoginState extends State<TelaLogin> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNav(currentIndex: 0),
+      bottomNavigationBar: const BottomNav(currentIndex: 5),
     );
   }
 }

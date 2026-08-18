@@ -60,7 +60,7 @@ class _AtendimentosClienteState extends State<AtendimentosCliente> {
                 },
               ),
       ),
-      bottomNavigationBar: const BottomNav(currentIndex: 0),
+      bottomNavigationBar: const BottomNav(currentIndex: 3),
     );
   }
 }

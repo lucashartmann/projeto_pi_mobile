@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../apis/usuario.dart';
 import 'package:projeto_pi_mobile/view/login.dart';
+import 'package:projeto_pi_mobile/view/widgets/bottom-nav.dart';
 
 class DadosCliente extends StatefulWidget {
   const DadosCliente({super.key});
@@ -16,11 +17,14 @@ class _DadosClienteState extends State<DadosCliente> {
   void initState() {
     super.initState();
     _usuario = carregarUser();
-    if (_usuario == null) {
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const TelaLogin()));
-    }
+    _usuario.then((dados) {
+      if (!mounted) return;
+      if (dados == null) {
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (_) => const TelaLogin()));
+      }
+    });
   }
 
   @override
@@ -47,12 +51,48 @@ class _DadosClienteState extends State<DadosCliente> {
                   return const Center(child: Text('Nenhum dado encontrado.'));
                 } else {
                   final usuario = snapshot.data!;
+                  print(
+                    "Data de Nascimento: ${usuario['usuario']['data_nascimento']}",
+                  );
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Nome: ${usuario['nome']}'),
-                      Text('Email: ${usuario['email']}'),
-                      Text('Telefone: ${usuario['telefone']}'),
+                      Text(
+                        "Dados básicos:",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text('Nome: ${usuario['usuario']?['nome']}'),
+                      Text('Email: ${usuario['usuario']?['email']}'),
+                      Text('Telefone: ${usuario['usuario']?['telefones']?[0]}'),
+                      Text('CPF/CNPJ: ${usuario['usuario']?['cpf_cnpj']}'),
+                      Text('RG: ${usuario['usuario']?['rg']}'),
+                      Text(
+                        'Data de Nascimento: ${usuario['usuario']?['data_nascimento']}',
+                      ),
+                      Text(
+                        'Data de Cadastro: ${usuario['usuario']?['data_cadastro']?['date']}',
+                      ),
+                      Text('Tipo: ${usuario['tipo']}'),
+                      SizedBox(height: 16),
+                      Text(
+                        "Endereço:",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text('Rua: ${usuario['usuario']?['endereco']?['rua']}'),
+                      Text(
+                        'Bairro: ${usuario['usuario']?['endereco']?['bairro']}',
+                      ),
+                      Text(
+                        'Número: ${usuario['usuario']?['endereco']?['numero']}',
+                      ),
+                      Text(
+                        'Complemento: ${usuario['usuario']?['endereco']?['complemento']}',
+                      ),
+                      Text('CEP: ${usuario['usuario']?['endereco']?['cep']}'),
+                      Text(
+                        'Cidade: ${usuario['usuario']?['endereco']?['cidade']}',
+                      ),
+                      Text('UF: ${usuario['usuario']?['endereco']?['uf']}'),
                     ],
                   );
                 }
@@ -62,6 +102,7 @@ class _DadosClienteState extends State<DadosCliente> {
           },
         ),
       ),
+      bottomNavigationBar: const BottomNav(currentIndex: 5),
     );
   }
 }

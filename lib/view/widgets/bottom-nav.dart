@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:projeto_pi_mobile/view/atendimentos_cliente.dart';
+import 'package:projeto_pi_mobile/view/notificacoes.dart';
+import 'package:projeto_pi_mobile/view/opcoes.dart';
 import '../tela_inicial.dart';
 import '../favoritos.dart';
 import '../dados_cliente.dart';
@@ -38,28 +40,30 @@ class BottomNavState extends State<BottomNav> {
       return;
     }
 
-    Widget? destination;
+    String rota = '';
 
     switch (index) {
       case 0:
-        destination = const TelaInicial();
+        rota = '/tela_inicial';
         break;
       case 1:
-        destination = const Favoritos();
+        rota = '/favoritos';
+        break;
+      case 2:
+        rota = '/opcoes';
+        break;
+      case 3:
+        rota = '/atendimentos_cliente';
+        break;
+      case 4:
+        rota = '/notificacoes';
         break;
       case 5:
-        destination = const DadosCliente();
+        rota = '/dados_cliente';
         break;
     }
 
-    if (destination == null) {
-      return;
-    }
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => destination!),
-    );
+    Navigator.pushNamed(context, rota);
   }
 
   @override

@@ -16,9 +16,10 @@ class Favoritos extends StatefulWidget {
 }
 
 void abrirTelaImovel(BuildContext context, Map<String, dynamic> imovel) {
-  Navigator.push(
+  Navigator.pushReplacementNamed(
     context,
-    MaterialPageRoute(builder: (context) => DadosImovel(imovel: imovel)),
+    '/dados_imovel',
+    arguments: imovel,
   );
 }
 
@@ -209,7 +210,7 @@ class _FavoritosState extends State<Favoritos> {
               )
             : CircularProgressIndicator(),
       ),
-      bottomNavigationBar: const BottomNav(currentIndex: 0),
+      bottomNavigationBar: const BottomNav(currentIndex: 1),
     );
   }
 }
