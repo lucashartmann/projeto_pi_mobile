@@ -105,8 +105,6 @@ class _TelaLoginState extends State<TelaLogin> {
 
       debugPrint(resposta.body);
 
-      // Formato dos dado {"status":"sucesso","usuario":{"id":5,"nome":"Gabriel Ribeiro Santos","tipo":"ADMIN"}}
-
       Map<String, dynamic> data = jsonDecode(resposta.body);
 
       if (data["status"] == "sucesso") {

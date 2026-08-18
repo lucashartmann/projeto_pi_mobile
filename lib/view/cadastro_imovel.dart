@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/bottom-nav.dart';
 
 class CadastroImovel extends StatefulWidget {
   const CadastroImovel({super.key});
@@ -66,9 +67,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
                 ],
               ),
               SizedBox(height: 70,),
-              SizedBox(
-                height: 1200,
-                child: GridView(
+             GridView(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -270,11 +269,12 @@ class _CadastroImovelState extends State<CadastroImovel> {
                     Column(children: [Text("Valor IPTU:"), TextField()]),
                   ],
                 ),
-              ),
+          
             ],
-          ),
+        ),
         ),
       ),
+      bottomNavigationBar: const BottomNav(currentIndex: 0),
     );
   }
 }

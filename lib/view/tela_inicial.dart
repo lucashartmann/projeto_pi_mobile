@@ -285,50 +285,43 @@ class _TelaInicialState extends State<TelaInicial> {
             ),
 
             SizedBox(height: 15),
-            SizedBox(
-              height: 1200,
-              child: FutureBuilder(
-                future: imoveisFiltrados,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return const Center(child: CircularProgressIndicator());
-                    case ConnectionState.active:
-                      return const Center(child: CircularProgressIndicator());
-                    case ConnectionState.done:
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Text(
-                            'Erro ao carregar dados: ${snapshot.error}',
-                          ),
-                        );
-                      }
-                      final imoveis = snapshot.data ?? [];
-                      if (imoveis.isEmpty) {
-                        return const Center(
-                          child: Text('Nenhum imóvel encontrado.'),
-                        );
-                      }
-                      return Expanded(
-                        child: MasonryGridView.count(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 4,
-                          crossAxisSpacing: 4,
-                          itemCount: imoveis.length,
-                          itemBuilder: (context, index) {
-                            return ContainerAnuncio(imovel: imoveis[index]);
-                          },
+            FutureBuilder(
+              future: imoveisFiltrados,
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const Center(child: CircularProgressIndicator());
+                  case ConnectionState.active:
+                    return const Center(child: CircularProgressIndicator());
+                  case ConnectionState.done:
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          'Erro ao carregar dados: ${snapshot.error}',
                         ),
                       );
-                    default:
+                    }
+                    final imoveis = snapshot.data ?? [];
+                    if (imoveis.isEmpty) {
                       return const Center(
-                        child: Text('Erro ao carregar dados'),
+                        child: Text('Nenhum imóvel encontrado.'),
                       );
-                  }
-                },
-              ),
+                    }
+                    return MasonryGridView.count(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 4,
+                      itemCount: imoveis.length,
+                      itemBuilder: (context, index) {
+                        return ContainerAnuncio(imovel: imoveis[index]);
+                      },
+                    );
+                  default:
+                    return const Center(child: Text('Erro ao carregar dados'));
+                }
+              },
             ),
           ],
         ),
