@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:projeto_pi_mobile/apis/imoveis.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class CadastroImovel extends StatefulWidget {
   const CadastroImovel({super.key});
@@ -20,6 +21,12 @@ class _CadastroImovelState extends State<CadastroImovel> {
   String _estado = "";
   String _ocupacao = "";
   String _status = "";
+
+  var cepFormatador = new MaskTextInputFormatter(
+    mask: '#####-###',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   final TextEditingController _refController = TextEditingController();
   final TextEditingController _nomeCondominioController =
@@ -89,14 +96,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
           "${dotenv.get('ADDRESS')}imoveis.php?acao=cadastrar",
         );
 
-        final resposta = await http.post(
-          uri,
-          body: jsonEncode(imovel),
-          headers: {
-            "Content-Type": "application/json",
-            "Cookie": sessionCookie ?? "",
-          },
-        );
+        final resposta = await http.post(uri, body: jsonEncode(imovel));
         if (resposta.statusCode != 200) {
           debugPrint("Erro HTTP: ${resposta.statusCode}");
         }
@@ -113,7 +113,11 @@ class _CadastroImovelState extends State<CadastroImovel> {
 
         final dados = jsonDecode(resposta.body);
 
-        debugPrint("Imóvel destacado com sucesso! $dados.mensagem");
+        if (dados["status"] == "erro") {
+          debugPrint("Erro ao salvar imóvel: ${dados["mensagem"]}");
+        } else {
+          debugPrint("Imóvel salvo com sucesso! ${dados["mensagem"]}");
+        }
       } catch (erro) {
         debugPrint("Falha ao conectar com o backend: $erro");
       }
@@ -157,9 +161,58 @@ class _CadastroImovelState extends State<CadastroImovel> {
 
       final dados = jsonDecode(resposta.body);
 
-      debugPrint("Imóvel excluido com sucesso! $dados.mensagem");
+      if (dados["status"] == "erro") {
+        debugPrint("Erro ao excluir imóvel: ${dados["mensagem"]}");
+      } else {
+        debugPrint("Imóvel excluido com sucesso! ${dados["mensagem"]}");
+      }
     } catch (erro) {
       debugPrint("Falha ao conectar com o backend: $erro");
+    }
+  }
+
+  void preencherEndereco(value) async {
+    String cep = value.replaceAll(RegExp(r'\D'), "");
+
+    _ruaController.text = "";
+    _bairroController.text = "";
+    _cidadeController.text = "";
+    _ufController.text = "";
+
+    if (cep.length < 8 || cep.length > 8) {
+      return;
+    }
+
+    try {
+      final uri = Uri.parse("https://viacep.com.br/ws/$cep/json/");
+
+      final resposta = await http.get(
+        uri,
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (resposta.statusCode != 200) {
+        debugPrint("Erro HTTP: ${resposta.statusCode}");
+      }
+
+      if (resposta.body.isEmpty) {
+        debugPrint("Resposta vazia do servidor");
+      }
+
+      if (resposta.headers["content-type"] == null ||
+          !resposta.headers["content-type"]!.contains("application/json")) {
+        debugPrint("Resposta não é JSON");
+        debugPrint(resposta.body);
+      }
+
+      final data = jsonDecode(resposta.body);
+
+      _ruaController.text = data["logradouro"] ?? "";
+      _bairroController.text = data["bairro"] ?? "";
+      _cidadeController.text = data["localidade"] ?? "";
+      _ufController.text = data["uf"] ?? "";
+    } catch (error) {
+      debugPrint("Falha ao conectar com o backend: $error");
     }
   }
 
@@ -235,64 +288,59 @@ class _CadastroImovelState extends State<CadastroImovel> {
                   Column(
                     children: [
                       Text("Categoria:"),
-                      DropdownButton<String>(
-                        value: "",
-                        items: const [
-                          DropdownMenuItem(
-                            value: "",
-                            child: Text("Selecione uma opção"),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: "Sala Comercial",
-                            child: Text("Sala Comercial"),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: "Apartamento",
-                            child: Text("Apartamento"),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: "Casa",
-                            child: Text("Casa"),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: "Terreno",
-                            child: Text("Terreno"),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: "Galpão",
-                            child: Text("Galpão"),
-                          ),
-                        ],
-                        onChanged: (value) => setState(() {
+                      DropdownMenu<String>(
+                        label: Text("Selecione uma opção"),
+                        onSelected: (value) => setState(() {
                           _categoria = value!;
                         }),
+                        dropdownMenuEntries: [
+                          DropdownMenuEntry(
+                            value: "",
+                            label: "Selecione uma opção",
+                          ),
+                          DropdownMenuEntry(
+                            value: "Sala Comercial",
+                            label: "Sala Comercial",
+                          ),
+
+                          DropdownMenuEntry(
+                            value: "Apartamento",
+                            label: "Apartamento",
+                          ),
+
+                          DropdownMenuEntry(value: "Casa", label: "Casa"),
+
+                          DropdownMenuEntry(value: "Terreno", label: "Terreno"),
+
+                          DropdownMenuEntry(value: "Galpão", label: "Galpão"),
+                        ],
                       ),
                     ],
                   ),
                   Column(
                     children: [
                       Text("Situação:"),
-                      DropdownButton<String>(
-                        value: "",
-                        items: const [
-                          DropdownMenuItem(
+                      DropdownMenu<String>(
+                        label: Text("Selecione uma opção"),
+                        dropdownMenuEntries: [
+                          DropdownMenuEntry(
                             value: "",
-                            child: Text("Selecione uma opção"),
+                            label: "Selecione uma opção",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Novo",
-                            child: Text("Novo"),
+                            label: "Novo",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Usado",
-                            child: Text("Usado"),
+                            label: "Usado",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Em construção",
-                            child: Text("Em construção"),
+                            label: "Em construção",
                           ),
                         ],
-                        onChanged: (value) => setState(() {
+                        onSelected: (value) => setState(() {
                           _situacao = value!;
                         }),
                       ),
@@ -301,27 +349,24 @@ class _CadastroImovelState extends State<CadastroImovel> {
                   Column(
                     children: [
                       Text("Estado:"),
-                      DropdownButton<String>(
-                        value: "",
-                        items: const [
-                          DropdownMenuItem(
+                      DropdownMenu<String>(
+                        label: Text("Selecione uma opção"),
+                        dropdownMenuEntries: [
+                          DropdownMenuEntry(
                             value: "",
-                            child: Text("Selecione uma opção"),
+                            label: "Selecione uma opção",
                           ),
-                          DropdownMenuItem<String>(
-                            value: "Bom",
-                            child: Text("Bom"),
-                          ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(value: "Bom", label: "Bom"),
+                          DropdownMenuEntry<String>(
                             value: "Ótimo",
-                            child: Text("Ótimo"),
+                            label: "Ótimo",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Regular",
-                            child: Text("Regular"),
+                            label: "Regular",
                           ),
                         ],
-                        onChanged: (value) => setState(() {
+                        onSelected: (value) => setState(() {
                           _estado = value!;
                         }),
                       ),
@@ -330,27 +375,27 @@ class _CadastroImovelState extends State<CadastroImovel> {
                   Column(
                     children: [
                       Text("Ocupação:"),
-                      DropdownButton<String>(
-                        value: "",
-                        items: const [
-                          DropdownMenuItem(
+                      DropdownMenu<String>(
+                        label: Text("Selecione uma opção"),
+                        dropdownMenuEntries: [
+                          DropdownMenuEntry(
                             value: "",
-                            child: Text("Selecione uma opção"),
+                            label: "Selecione uma opção",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Desocupado",
-                            child: Text("Desocupado"),
+                            label: "Desocupado",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Inquilino",
-                            child: Text("Inquilino"),
+                            label: "Inquilino",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Proprietário",
-                            child: Text("Proprietário"),
+                            label: "Proprietário",
                           ),
                         ],
-                        onChanged: (value) => setState(() {
+                        onSelected: (value) => setState(() {
                           _ocupacao = value!;
                         }),
                       ),
@@ -359,39 +404,40 @@ class _CadastroImovelState extends State<CadastroImovel> {
                   Column(
                     children: [
                       Text("Status:"),
-                      DropdownButton<String>(
-                        value: "",
-                        items: const [
-                          DropdownMenuItem(
+                      DropdownMenu<String>(
+                        label: Text("Selecione uma opção"),
+                        dropdownMenuEntries: [
+                          DropdownMenuEntry(
                             value: "",
-                            child: Text("Selecione uma opção"),
+                            label: "Selecione uma opção",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Venda",
-                            child: Text("Venda"),
+                            label: "Venda",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Aluguel",
-                            child: Text("Aluguel"),
+                            label: "Aluguel",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Venda e Aluguel",
-                            child: Text("Venda e Aluguel"),
+                            label: "Venda e Aluguel",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Alugado",
-                            child: Text("Alugado"),
+                            label: "Alugado",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Vendido",
-                            child: Text("Vendido"),
+                            label: "Vendido",
                           ),
-                          DropdownMenuItem<String>(
+                          DropdownMenuEntry<String>(
                             value: "Pendente",
-                            child: Text("Pendente"),
+                            label: "Pendente",
                           ),
                         ],
-                        onChanged: (value) => setState(() {
+                        onSelected: (value) => setState(() {
+                          debugPrint("Status selecionado: $value");
                           _status = value!;
                         }),
                       ),
@@ -412,7 +458,11 @@ class _CadastroImovelState extends State<CadastroImovel> {
                   Column(
                     children: [
                       Text("CEP:"),
-                      TextField(controller: _cepController),
+                      TextField(
+                        controller: _cepController,
+                        inputFormatters: [cepFormatador],
+                        onChanged: (value) => preencherEndereco(value),
+                      ),
                     ],
                   ),
                   Column(

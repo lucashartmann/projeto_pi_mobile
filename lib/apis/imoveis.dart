@@ -62,6 +62,11 @@ dynamic destacarImovel(int imovelId) async {
 
     final dados = jsonDecode(resposta.body);
 
+    if (dados["status"] == "erro") {
+      debugPrint("Erro ao destacar imóvel: ${dados["mensagem"]}");
+      return null;
+    }
+
     debugPrint("Imóvel destacado com sucesso! $dados.mensagem");
 
     return dados;
@@ -103,8 +108,12 @@ void excluirImovel(int imovelId) async {
 
     final dados = jsonDecode(resposta.body);
 
-    debugPrint("Imóvel excluido com sucesso! $dados.mensagem");
+    if (dados["status"] == "erro") {
+      debugPrint("Erro ao excluir imóvel: ${dados["mensagem"]}");
+      return null;
+    }
 
+    debugPrint("Imóvel excluido com sucesso! $dados.mensagem");
   } catch (erro) {
     debugPrint("Falha ao conectar com o backend: $erro");
   }

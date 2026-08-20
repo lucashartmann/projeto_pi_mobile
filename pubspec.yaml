@@ -17,6 +17,7 @@ dependencies:
   http: ^1.6.0
   cookie_jar: ^4.0.9
   flutter_dotenv: ^6.0.1
+  mask_text_input_formatter: ^2.9.0
   # http_cookie_jar: ^4.0.8
 dev_dependencies:
   flutter_test:
