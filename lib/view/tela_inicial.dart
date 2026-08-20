@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../apis/imoveis.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'dados_imovel.dart';
 import 'dart:async';
 import 'widgets/bottom-nav.dart';
 
@@ -17,24 +16,8 @@ class ContainerAnuncio extends StatefulWidget {
 class _ContainerAnuncioState extends State<ContainerAnuncio> {
   int imagemAtual = 0;
 
-  List<String> _imagensDoAnuncio() {
-    final anuncio = widget.imovel['anuncio'];
-    if (anuncio is! Map<String, dynamic>) {
-      return const [];
-    }
-
-    final imagens = anuncio['imagens'];
-    if (imagens is List) {
-      return imagens.whereType<String>().toList();
-    }
-
-    return const [];
-  }
-
   @override
   Widget build(BuildContext context) {
-    final imagens = _imagensDoAnuncio();
-
     return GestureDetector(
       onTap: () {
         Navigator.pushReplacementNamed(
@@ -50,13 +33,14 @@ class _ContainerAnuncioState extends State<ContainerAnuncio> {
         child: Column(
           children: [
             // Icon(icons.heart,)
-            if (imagens.isNotEmpty)
+            if (widget.imovel['anuncio']?['imagens'] != null &&
+                (widget.imovel['anuncio']?['imagens'] as List).isNotEmpty)
               SizedBox(
                 height: 200,
                 child: Stack(
                   children: [
                     Image.network(
-                      imagens[imagemAtual],
+                      widget.imovel['anuncio']?['imagens'][imagemAtual],
                       width: double.infinity,
                       height: 200,
                       fit: BoxFit.cover,
@@ -90,7 +74,9 @@ class _ContainerAnuncioState extends State<ContainerAnuncio> {
                         ),
                       ),
 
-                    if (imagemAtual < imagens.length - 1)
+                    if (imagemAtual <
+                        (widget.imovel['anuncio']?['imagens'] as List).length -
+                            1)
                       Positioned(
                         right: 8,
                         top: 75,

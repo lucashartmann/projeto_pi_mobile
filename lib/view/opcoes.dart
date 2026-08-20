@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_pi_mobile/view/dados_cliente.dart';
-import 'package:projeto_pi_mobile/view/estoque.dart';
-import 'package:projeto_pi_mobile/view/atendimentos.dart';
 import 'widgets/bottom-nav.dart';
 
 class Opcoes extends StatefulWidget {

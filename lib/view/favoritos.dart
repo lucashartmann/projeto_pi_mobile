@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'widgets/bottom-nav.dart';
 import 'dart:async';
-import 'dados_imovel.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../apis/api.dart';

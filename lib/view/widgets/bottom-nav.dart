@@ -1,10 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_pi_mobile/view/atendimentos_cliente.dart';
-import 'package:projeto_pi_mobile/view/notificacoes.dart';
-import 'package:projeto_pi_mobile/view/opcoes.dart';
-import '../tela_inicial.dart';
-import '../favoritos.dart';
-import '../dados_cliente.dart';
 import '../../../apis/notificacoes.dart';
 
 class BottomNav extends StatefulWidget {

@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'widgets/bottom-nav.dart';
+import 'package:projeto_pi_mobile/apis/api.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:projeto_pi_mobile/apis/imoveis.dart';
 
 class CadastroImovel extends StatefulWidget {
   const CadastroImovel({super.key});
@@ -9,11 +15,153 @@ class CadastroImovel extends StatefulWidget {
 }
 
 class _CadastroImovelState extends State<CadastroImovel> {
-  String categoria = "";
-  String situacao = "";
-  String estado = "";
-  String ocupacao = "";
-  String status = "";
+  String _categoria = "";
+  String _situacao = "";
+  String _estado = "";
+  String _ocupacao = "";
+  String _status = "";
+
+  final TextEditingController _refController = TextEditingController();
+  final TextEditingController _nomeCondominioController =
+      TextEditingController();
+  final TextEditingController _anoConstrucaoController =
+      TextEditingController();
+  final TextEditingController _cepController = TextEditingController();
+  final TextEditingController _ruaController = TextEditingController();
+  final TextEditingController _numeroController = TextEditingController();
+  final TextEditingController _complementoController = TextEditingController();
+  final TextEditingController _blocoController = TextEditingController();
+  final TextEditingController _andarController = TextEditingController();
+  final TextEditingController _bairroController = TextEditingController();
+  final TextEditingController _cidadeController = TextEditingController();
+  final TextEditingController _ufController = TextEditingController();
+  final TextEditingController _salasController = TextEditingController();
+  final TextEditingController _banheirosController = TextEditingController();
+  final TextEditingController _vagasController = TextEditingController();
+  final TextEditingController _varandasController = TextEditingController();
+  final TextEditingController _quartosController = TextEditingController();
+  final TextEditingController _suitesController = TextEditingController();
+  final TextEditingController _areaTotalController = TextEditingController();
+  final TextEditingController _areaPrivativaController =
+      TextEditingController();
+  final TextEditingController _valorVendaController = TextEditingController();
+  final TextEditingController _valorAluguelController = TextEditingController();
+  final TextEditingController _valorCondominioController =
+      TextEditingController();
+  final TextEditingController _valorIPTUController = TextEditingController();
+
+  void salvar() async {
+    Map<String, dynamic> imovel = {
+      "ref": _refController.text,
+      "categoria": _categoria,
+      "situacao": _situacao,
+      "estado": _estado,
+      "ocupacao": _ocupacao,
+      "status": _status,
+      "nomeCondominio": _nomeCondominioController.text,
+      "anoConstrucao": _anoConstrucaoController.text,
+      "cep": _cepController.text,
+      "rua": _ruaController.text,
+      "numero": _numeroController.text,
+      "complemento": _complementoController.text,
+      "bloco": _blocoController.text,
+      "andar": _andarController.text,
+      "bairro": _bairroController.text,
+      "cidade": _cidadeController.text,
+      "uf": _ufController.text,
+      "salas": _salasController.text,
+      "banheiros": _banheirosController.text,
+      "vagas": _vagasController.text,
+      "varandas": _varandasController.text,
+      "quartos": _quartosController.text,
+      "suites": _suitesController.text,
+      "areaTotal": _areaTotalController.text,
+      "areaPrivativa": _areaPrivativaController.text,
+      "valorVenda": _valorVendaController.text,
+      "valorAluguel": _valorAluguelController.text,
+      "valorCondominio": _valorCondominioController.text,
+      "valorIPTU": _valorIPTUController.text,
+    };
+
+    if (imovel.isNotEmpty) {
+      try {
+        final uri = Uri.parse(
+          "${dotenv.get('ADDRESS')}imoveis.php?acao=cadastrar",
+        );
+
+        final resposta = await http.post(
+          uri,
+          body: jsonEncode(imovel),
+          headers: {
+            "Content-Type": "application/json",
+            "Cookie": sessionCookie ?? "",
+          },
+        );
+        if (resposta.statusCode != 200) {
+          debugPrint("Erro HTTP: ${resposta.statusCode}");
+        }
+
+        if (resposta.body.isEmpty) {
+          debugPrint("Resposta vazia do servidor");
+        }
+
+        if (resposta.headers["content-type"] == null ||
+            !resposta.headers["content-type"]!.contains("application/json")) {
+          debugPrint("Resposta não é JSON");
+          debugPrint(resposta.body);
+        }
+
+        final dados = jsonDecode(resposta.body);
+
+        debugPrint("Imóvel destacado com sucesso! $dados.mensagem");
+      } catch (erro) {
+        debugPrint("Falha ao conectar com o backend: $erro");
+      }
+    } else {
+      debugPrint("Erro: Dados do imóvel estão vazios");
+    }
+  }
+
+  void excluirImovel() async {
+    int imovelId = _refController.text.isNotEmpty
+        ? int.tryParse(_refController.text) ?? 0
+        : 0;
+    if (imovelId <= 0) {
+      debugPrint("ID do imóvel inválido: $imovelId");
+    }
+    try {
+      final uri = Uri.parse(
+        "${dotenv.get('ADDRESS')}imoveis.php?acao=apagar&id=$imovelId",
+      );
+      final resposta = await http.post(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Cookie": sessionCookie ?? "",
+        },
+      );
+
+      if (resposta.statusCode != 200) {
+        debugPrint("Erro HTTP: ${resposta.statusCode}");
+      }
+
+      if (resposta.body.isEmpty) {
+        debugPrint("Resposta vazia do servidor");
+      }
+
+      if (resposta.headers["content-type"] == null ||
+          !resposta.headers["content-type"]!.contains("application/json")) {
+        debugPrint("Resposta não é JSON");
+        debugPrint(resposta.body);
+      }
+
+      final dados = jsonDecode(resposta.body);
+
+      debugPrint("Imóvel excluido com sucesso! $dados.mensagem");
+    } catch (erro) {
+      debugPrint("Falha ao conectar com o backend: $erro");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +177,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: excluirImovel,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
@@ -40,7 +188,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
                   ),
                   SizedBox(width: 20),
                   ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: salvar,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                     ),
@@ -78,7 +226,12 @@ class _CadastroImovelState extends State<CadastroImovel> {
                   // crossAxisSpacing: 4,
                 ),
                 children: [
-                  Column(children: [Text("ref:"), TextField()]),
+                  Column(
+                    children: [
+                      Text("ref:"),
+                      TextField(controller: _refController),
+                    ],
+                  ),
                   Column(
                     children: [
                       Text("Categoria:"),
@@ -111,7 +264,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
                           ),
                         ],
                         onChanged: (value) => setState(() {
-                          categoria = value!;
+                          _categoria = value!;
                         }),
                       ),
                     ],
@@ -140,7 +293,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
                           ),
                         ],
                         onChanged: (value) => setState(() {
-                          situacao = value!;
+                          _situacao = value!;
                         }),
                       ),
                     ],
@@ -169,7 +322,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
                           ),
                         ],
                         onChanged: (value) => setState(() {
-                          estado = value!;
+                          _estado = value!;
                         }),
                       ),
                     ],
@@ -198,7 +351,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
                           ),
                         ],
                         onChanged: (value) => setState(() {
-                          ocupacao = value!;
+                          _ocupacao = value!;
                         }),
                       ),
                     ],
@@ -239,33 +392,143 @@ class _CadastroImovelState extends State<CadastroImovel> {
                           ),
                         ],
                         onChanged: (value) => setState(() {
-                          status = value!;
+                          _status = value!;
                         }),
                       ),
                     ],
                   ),
-                  Column(children: [Text("Nome do condominio:"), TextField()]),
-                  Column(children: [Text("Ano de Construção:"), TextField()]),
-                  Column(children: [Text("CEP:"), TextField()]),
-                  Column(children: [Text("Rua:"), TextField()]),
-                  Column(children: [Text("Número:"), TextField()]),
-                  Column(children: [Text("Complemento:"), TextField()]),
-                  Column(children: [Text("Bloco:"), TextField()]),
-                  Column(children: [Text("Andar:"), TextField()]),
-                  Column(children: [Text("Bairro:"), TextField()]),
-                  Column(children: [Text("Cidade:"), TextField()]),
-                  Column(children: [Text("UF:"), TextField()]),
-                  Column(children: [Text("Salas:"), TextField()]),
-                  Column(children: [Text("Banheiros:"), TextField()]),
-                  Column(children: [Text("Vagas:"), TextField()]),
-                  Column(children: [Text("Varandas:"), TextField()]),
-                  Column(children: [Text("Quartos:"), TextField()]),
-                  Column(children: [Text("Area Total:"), TextField()]),
-                  Column(children: [Text("Area Privativa:"), TextField()]),
-                  Column(children: [Text("Valor Venda:"), TextField()]),
-                  Column(children: [Text("Valor Aluguel:"), TextField()]),
-                  Column(children: [Text("Valor Condominio:"), TextField()]),
-                  Column(children: [Text("Valor IPTU:"), TextField()]),
+                  Column(
+                    children: [
+                      Text("Nome do condominio:"),
+                      TextField(controller: _nomeCondominioController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Ano de Construção:"),
+                      TextField(controller: _anoConstrucaoController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("CEP:"),
+                      TextField(controller: _cepController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Rua:"),
+                      TextField(controller: _ruaController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Número:"),
+                      TextField(controller: _numeroController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Complemento:"),
+                      TextField(controller: _complementoController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Bloco:"),
+                      TextField(controller: _blocoController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Andar:"),
+                      TextField(controller: _andarController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Bairro:"),
+                      TextField(controller: _bairroController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Cidade:"),
+                      TextField(controller: _cidadeController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("UF:"),
+                      TextField(controller: _ufController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Salas:"),
+                      TextField(controller: _salasController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Banheiros:"),
+                      TextField(controller: _banheirosController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Vagas:"),
+                      TextField(controller: _vagasController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Varandas:"),
+                      TextField(controller: _varandasController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Quartos:"),
+                      TextField(controller: _quartosController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Area Total:"),
+                      TextField(controller: _areaTotalController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Area Privativa:"),
+                      TextField(controller: _areaPrivativaController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Valor Venda:"),
+                      TextField(controller: _valorVendaController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Valor Aluguel:"),
+                      TextField(controller: _valorAluguelController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Valor Condominio:"),
+                      TextField(controller: _valorCondominioController),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text("Valor IPTU:"),
+                      TextField(controller: _valorIPTUController),
+                    ],
+                  ),
                 ],
               ),
             ],

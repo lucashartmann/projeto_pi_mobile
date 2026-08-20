@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'api.dart';
+import 'package:projeto_pi_mobile/apis/api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -71,7 +71,10 @@ dynamic destacarImovel(int imovelId) async {
   }
 }
 
-dynamic excluirImovel(int imovelId) async {
+void excluirImovel(int imovelId) async {
+  if (imovelId <= 0) {
+    debugPrint("ID do imóvel inválido: $imovelId");
+  }
   try {
     final uri = Uri.parse(
       "${dotenv.get('ADDRESS')}imoveis.php?acao=apagar&id=$imovelId",
@@ -86,29 +89,24 @@ dynamic excluirImovel(int imovelId) async {
 
     if (resposta.statusCode != 200) {
       debugPrint("Erro HTTP: ${resposta.statusCode}");
-      return null;
     }
 
     if (resposta.body.isEmpty) {
       debugPrint("Resposta vazia do servidor");
-      return null;
     }
 
     if (resposta.headers["content-type"] == null ||
         !resposta.headers["content-type"]!.contains("application/json")) {
       debugPrint("Resposta não é JSON");
       debugPrint(resposta.body);
-      return null;
     }
 
     final dados = jsonDecode(resposta.body);
 
-    debugPrint("Imóvel destacado com sucesso! $dados.mensagem");
+    debugPrint("Imóvel excluido com sucesso! $dados.mensagem");
 
-    return dados;
   } catch (erro) {
     debugPrint("Falha ao conectar com o backend: $erro");
-    return null;
   }
 }
 

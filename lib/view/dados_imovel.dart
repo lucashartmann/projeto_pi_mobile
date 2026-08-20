@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'widgets/bottom-nav.dart';
 
 class DadosImovel extends StatefulWidget {
-  final Map<String, dynamic> imovel;
-
-  const DadosImovel({super.key, required this.imovel});
+  
+  const DadosImovel({super.key});
 
   @override
   State<DadosImovel> createState() => _DadosImovelState();
@@ -12,9 +11,10 @@ class DadosImovel extends StatefulWidget {
 
 class _DadosImovelState extends State<DadosImovel> {
   int imagemAtual = 0;
-
+  
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> imovel = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -26,14 +26,14 @@ class _DadosImovelState extends State<DadosImovel> {
                 Navigator.pop(context);
               },
             ),
-            if (widget.imovel['anuncio']['imagens'] != null &&
-                widget.imovel['anuncio']['imagens'].isNotEmpty)
+            if (imovel['anuncio']?['imagens'] != null &&
+                imovel['anuncio']['imagens'].isNotEmpty)
               SizedBox(
                 height: 200,
                 child: Stack(
                   children: [
                     Image.network(
-                      widget.imovel['anuncio']['imagens'][imagemAtual],
+                      imovel['anuncio']['imagens'][imagemAtual],
                       width: double.infinity,
                       height: 200,
                       fit: BoxFit.cover,
@@ -45,7 +45,7 @@ class _DadosImovelState extends State<DadosImovel> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         spacing: 0.0,
                         children: List.generate(
-                          widget.imovel['anuncio']['imagens'].length,
+                          imovel['anuncio']['imagens'].length,
                           (index) {
                             return IconButton(
                               onPressed: () {
@@ -85,7 +85,7 @@ class _DadosImovelState extends State<DadosImovel> {
                       ),
 
                     if (imagemAtual <
-                        widget.imovel['anuncio']['imagens'].length - 1)
+                        imovel['anuncio']['imagens'].length - 1)
                       Positioned(
                         right: 8,
                         top: 75,
@@ -107,13 +107,13 @@ class _DadosImovelState extends State<DadosImovel> {
               ),
             const SizedBox(height: 50),
             Text(
-              '${widget.imovel['anuncio']['titulo']}',
+              '${imovel['anuncio']?['titulo']}',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 50),
             Text(
-              '${widget.imovel['endereco']['rua']}, ${widget.imovel['endereco']['numero']}, ${widget.imovel['endereco']['bairro']}, ${widget.imovel['endereco']['cidade']} - ${widget.imovel['endereco']['uf']}',
+              '${imovel['endereco']?['rua']}, ${imovel['endereco']?['numero']}, ${imovel['endereco']?['bairro']}, ${imovel['endereco']?['cidade']} - ${imovel['endereco']?['uf']}',
               style: const TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
@@ -124,62 +124,62 @@ class _DadosImovelState extends State<DadosImovel> {
               children: [
                 Column(
                   children: [
-                    if (widget.imovel['quantidade_quartos'] != null &&
-                        widget.imovel['quantidade_quartos'] > 0)
+                    if (imovel['quantidade_quartos'] != null &&
+                        imovel['quantidade_quartos'] > 0)
                       Row(
                         children: [
                           Text("Quartos: ", style: TextStyle(fontSize: 20)),
                           Icon(Icons.bed, size: 30),
                           Text(
-                            '${widget.imovel['quantidade_quartos']}',
+                            '${imovel['quantidade_quartos']}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
                       ),
-                    if (widget.imovel['quantidade_salas'] != null &&
-                        widget.imovel['quantidade_salas'] > 0)
+                    if (imovel['quantidade_salas'] != null &&
+                        imovel['quantidade_salas'] > 0)
                       Row(
                         children: [
                           Text("Salas: ", style: TextStyle(fontSize: 20)),
                           Icon(Icons.living, size: 30),
                           Text(
-                            '${widget.imovel['quantidade_salas']}',
+                            '${imovel['quantidade_salas']}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
                       ),
-                    if (widget.imovel['quantidade_suites'] != null &&
-                        widget.imovel['quantidade_suites'] > 0)
+                    if (imovel['quantidade_suites'] != null &&
+                        imovel['quantidade_suites'] > 0)
                       Row(
                         children: [
                           Text("Suítes: ", style: TextStyle(fontSize: 20)),
                           Icon(Icons.bed, size: 30),
                           Text(
-                            '${widget.imovel['quantidade_suites']}',
+                            '${imovel['quantidade_suites']}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
                       ),
-                    if (widget.imovel['quantidade_banheiros'] != null &&
-                        widget.imovel['quantidade_banheiros'] > 0)
+                    if (imovel['quantidade_banheiros'] != null &&
+                        imovel['quantidade_banheiros'] > 0)
                       Row(
                         children: [
                           Text("Banheiros: ", style: TextStyle(fontSize: 20)),
                           Icon(Icons.bathtub, size: 30),
                           Text(
-                            '${widget.imovel['quantidade_banheiros']}',
+                            '${imovel['quantidade_banheiros']}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
                       ),
-                    if (widget.imovel['quantidade_vagas'] != null &&
-                        widget.imovel['quantidade_vagas'] > 0)
+                    if (imovel['quantidade_vagas'] != null &&
+                        imovel['quantidade_vagas'] > 0)
                       Row(
                         children: [
                           Text("Vagas: ", style: TextStyle(fontSize: 20)),
                           Icon(Icons.directions_car, size: 30),
                           Text(
-                            '${widget.imovel['quantidade_vagas']}',
+                            '${imovel['quantidade_vagas']}',
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
@@ -193,7 +193,7 @@ class _DadosImovelState extends State<DadosImovel> {
                         Icon(Icons.attach_money),
                         Column(
                           children: [
-                            if (widget.imovel["valor_venda"] != null)
+                            if (imovel["valor_venda"] != null)
                               RichText(
                                 text: TextSpan(
                                   style: const TextStyle(
@@ -204,7 +204,7 @@ class _DadosImovelState extends State<DadosImovel> {
                                     TextSpan(text: "Venda: "),
                                     TextSpan(
                                       text:
-                                          "R\$ ${widget.imovel["valor_venda"]}",
+                                          "R\$ ${imovel["valor_venda"]}",
                                       style: const TextStyle(
                                         color: Colors.green,
                                         fontWeight: FontWeight.bold,
@@ -213,7 +213,7 @@ class _DadosImovelState extends State<DadosImovel> {
                                   ],
                                 ),
                               ),
-                            if (widget.imovel["valor_aluguel"] != null)
+                            if (imovel["valor_aluguel"] != null)
                               RichText(
                                 text: TextSpan(
                                   style: const TextStyle(
@@ -224,7 +224,7 @@ class _DadosImovelState extends State<DadosImovel> {
                                     TextSpan(text: "Aluguel: "),
                                     TextSpan(
                                       text:
-                                          "R\$ ${widget.imovel["valor_aluguel"]}",
+                                          "R\$ ${imovel["valor_aluguel"]}",
                                       style: const TextStyle(
                                         color: Colors.green,
                                         fontWeight: FontWeight.bold,
@@ -244,21 +244,21 @@ class _DadosImovelState extends State<DadosImovel> {
 
             const SizedBox(height: 50),
             Text(
-              '${widget.imovel['anuncio']['descricao']}',
+              '${imovel['anuncio']?['descricao']}',
               style: const TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
-            if (widget.imovel['filtros'] != null &&
-                widget.imovel['filtros'].isNotEmpty)
+            if (imovel['filtros'] != null &&
+                imovel['filtros'].isNotEmpty)
               const SizedBox(height: 50),
-            if (widget.imovel['filtros'] != null &&
-                widget.imovel['filtros'].isNotEmpty)
+            if (imovel['filtros'] != null &&
+                imovel['filtros'].isNotEmpty)
               Text(
                 "Características do imóvel:",
                 style: TextStyle(fontSize: 20),
               ),
-            if (widget.imovel['filtros'] != null &&
-                widget.imovel['filtros'].isNotEmpty)
+            if (imovel['filtros'] != null &&
+                imovel['filtros'].isNotEmpty)
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -267,28 +267,28 @@ class _DadosImovelState extends State<DadosImovel> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: widget.imovel['filtros'].length,
+                itemCount: imovel['filtros'].length,
                 itemBuilder: (context, index) {
-                  return Text(widget.imovel['filtros'][index]);
+                  return Text(imovel['filtros'][index]);
                 },
               ),
 
-            if (widget.imovel['condominio'] != null &&
-                widget.imovel['condominio']['filtros'] != null &&
-                widget.imovel['condominio']['filtros'].isNotEmpty)
+            if (imovel['condominio'] != null &&
+                imovel['condominio']['filtros'] != null &&
+                imovel['condominio']['filtros'].isNotEmpty)
               const SizedBox(height: 50),
 
-            if (widget.imovel['condominio'] != null &&
-                widget.imovel['condominio']['filtros'] != null &&
-                widget.imovel['condominio']['filtros'].isNotEmpty)
+            if (imovel['condominio'] != null &&
+                imovel['condominio']['filtros'] != null &&
+                imovel['condominio']['filtros'].isNotEmpty)
               Text(
                 "Características do condomínio:",
                 style: TextStyle(fontSize: 20),
               ),
 
-            if (widget.imovel['condominio'] != null &&
-                widget.imovel['condominio']['filtros'] != null &&
-                widget.imovel['condominio']['filtros'].isNotEmpty)
+            if (imovel['condominio'] != null &&
+                imovel['condominio']['filtros'] != null &&
+                imovel['condominio']['filtros'].isNotEmpty)
               Center(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
@@ -300,10 +300,10 @@ class _DadosImovelState extends State<DadosImovel> {
                           mainAxisSpacing: 10,
                         ),
 
-                    itemCount: widget.imovel['condominio']['filtros'].length,
+                    itemCount: imovel['condominio']['filtros'].length,
                     itemBuilder: (context, index) {
                       return Text(
-                        widget.imovel['condominio']['filtros'][index],
+                        imovel['condominio']['filtros'][index],
                       );
                     },
                   ),

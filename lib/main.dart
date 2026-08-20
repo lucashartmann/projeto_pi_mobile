@@ -11,7 +11,6 @@ import 'package:projeto_pi_mobile/view/dados_cliente.dart';
 import 'package:projeto_pi_mobile/view/dados_imovel.dart';
 import 'package:projeto_pi_mobile/view/notificacoes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:projeto_pi_mobile/view/widgets/teste.dart';
 
 void main() async {
   try {
@@ -31,7 +30,7 @@ class MeuApp extends StatelessWidget {
       title: 'Imóveis',
       debugShowCheckedModeBanner: false,
       routes: {
-        '/tela_inicial': (context) => const TelaInicial(),
+        '/tela_inicial': (context) => const CadastroImovel(),
         '/login': (context) => const TelaLogin(),
         '/cadastro_imovel': (context) => const CadastroImovel(),
         '/opcoes': (context) => const Opcoes(),
@@ -40,7 +39,7 @@ class MeuApp extends StatelessWidget {
         '/favoritos': (context) => const Favoritos(),
         '/dados_cliente': (context) => const DadosCliente(),
         '/cadastro_cliente': (context) => const CadastroCliente(),
-        '/dados_imovel': (context) => const DadosImovel(imovel: {}),
+        '/dados_imovel': (context) => const DadosImovel(),
         '/notificacoes': (context) => const Notificacoes(),
       },
       initialRoute: '/tela_inicial',
