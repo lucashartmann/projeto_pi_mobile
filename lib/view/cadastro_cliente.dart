@@ -107,15 +107,17 @@ class _CadastroClienteState extends State<CadastroCliente> {
   void salvar() async {
     Map<String, dynamic> pessoa = {
       "tipo": _tipo,
-      "telefone": _telefoneController.text,
+      "telefone": _telefoneController.text.replaceAll(RegExp(r'\D'), ''),
       "nome": _nomeController.text,
       "email": _emailController.text,
-      "cpf_cnpj": _cpfCnpjController.text,
-      "data_nascimento": _dataNascimentoController.text,
-      "salario": _salarioController.text,
+      "cpf_cnpj": _cpfCnpjController.text.replaceAll(RegExp(r'\D'), ''),
+      "data_nascimento": _dataNascimentoController.text.isNotEmpty
+          ? DateTime.parse(_dataNascimentoController.text)
+          : '',
+      "salario": _salarioController.text.replaceAll(RegExp(r'\D'), ''),
       "creci": _creciController.text,
       "rg": _rgController.text,
-      "cep": _cepController.text,
+      "cep": _cepController.text.replaceAll(RegExp(r'\D'), ''),
       "rua": _ruaController.text,
       "numero": _numeroController.text,
       "complemento": _complementoController.text,
@@ -134,7 +136,11 @@ class _CadastroClienteState extends State<CadastroCliente> {
           "${dotenv.get('ADDRESS')}usuarios.php?acao=cadastro",
         );
 
-        final resposta = await http.post(uri, body: jsonEncode(pessoa));
+        final resposta = await http.post(
+          uri,
+          body: jsonEncode(pessoa),
+          headers: {"Cookie": sessionCookie ?? ""},
+        );
         if (resposta.statusCode != 200) {
           debugPrint("Erro HTTP: ${resposta.statusCode}");
         }
@@ -164,7 +170,7 @@ class _CadastroClienteState extends State<CadastroCliente> {
     }
   }
 
-  void excluirImovel() async {
+  void excluirPessoa() async {
     int idPessoa = _idController.text.isNotEmpty
         ? int.tryParse(_idController.text) ?? 0
         : 0;
@@ -228,7 +234,7 @@ class _CadastroClienteState extends State<CadastroCliente> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: excluirPessoa,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
@@ -239,7 +245,7 @@ class _CadastroClienteState extends State<CadastroCliente> {
                   ),
                   SizedBox(width: 20),
                   ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: salvar,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                     ),
@@ -264,7 +270,15 @@ class _CadastroClienteState extends State<CadastroCliente> {
                 children: [
                   Column(
                     children: [
-                      Text("Tipo:"),
+                      Row(
+                        children: [
+                          Text(
+                            "*",
+                            style: TextStyle(color: Colors.red, fontSize: 21),
+                          ),
+                          Text("Tipo:"),
+                        ],
+                      ),
                       DropdownMenu<String>(
                         label: Text("Selecione uma opção"),
                         dropdownMenuEntries: [
@@ -318,7 +332,15 @@ class _CadastroClienteState extends State<CadastroCliente> {
                   ),
                   Column(
                     children: [
-                      Text("Nome:"),
+                      Row(
+                        children: [
+                          Text(
+                            "*",
+                            style: TextStyle(color: Colors.red, fontSize: 21),
+                          ),
+                          Text("Nome:"),
+                        ],
+                      ),
                       TextField(controller: _nomeController),
                     ],
                   ),
@@ -390,7 +412,15 @@ class _CadastroClienteState extends State<CadastroCliente> {
                   ),
                   Column(
                     children: [
-                      Text("CPF/CNPJ:"),
+                      Row(
+                        children: [
+                          Text(
+                            "*",
+                            style: TextStyle(color: Colors.red, fontSize: 21),
+                          ),
+                          Text("CPF/CNPJ:"),
+                        ],
+                      ),
                       TextField(
                         controller: _cpfCnpjController,
                         inputFormatters: [cpfCnpjFormatador],

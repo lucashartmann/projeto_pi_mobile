@@ -99,7 +99,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
           "${dotenv.get('ADDRESS')}imoveis.php?acao=cadastrar",
         );
 
-        final resposta = await http.post(uri, body: jsonEncode(imovel));
+        final resposta = await http.post(uri, body: jsonEncode(imovel), headers: {"Cookie": sessionCookie ?? ""},);
         if (resposta.statusCode != 200) {
           debugPrint("Erro HTTP: ${resposta.statusCode}");
         }
