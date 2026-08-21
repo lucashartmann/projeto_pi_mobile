@@ -30,7 +30,7 @@ class MeuApp extends StatelessWidget {
       title: 'Imóveis',
       debugShowCheckedModeBanner: false,
       routes: {
-        '/tela_inicial': (context) => const CadastroImovel(),
+        '/tela_inicial': (context) => const CadastroCliente(),
         '/login': (context) => const TelaLogin(),
         '/cadastro_imovel': (context) => const CadastroImovel(),
         '/opcoes': (context) => const Opcoes(),

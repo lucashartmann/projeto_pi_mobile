@@ -16,18 +16,6 @@ class CadastroImovel extends StatefulWidget {
 }
 
 class _CadastroImovelState extends State<CadastroImovel> {
-  String _categoria = "";
-  String _situacao = "";
-  String _estado = "";
-  String _ocupacao = "";
-  String _status = "";
-
-  var cepFormatador = new MaskTextInputFormatter(
-    mask: '#####-###',
-    filter: {"#": RegExp(r'[0-9]')},
-    type: MaskAutoCompletionType.lazy,
-  );
-
   final TextEditingController _refController = TextEditingController();
   final TextEditingController _nomeCondominioController =
       TextEditingController();
@@ -56,6 +44,20 @@ class _CadastroImovelState extends State<CadastroImovel> {
   final TextEditingController _valorCondominioController =
       TextEditingController();
   final TextEditingController _valorIPTUController = TextEditingController();
+  final TextEditingController _tituloController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
+
+  String _categoria = "";
+  String _situacao = "";
+  String _estado = "";
+  String _ocupacao = "";
+  String _status = "";
+
+  var cepFormatador = new MaskTextInputFormatter(
+    mask: '#####-###',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   void salvar() async {
     Map<String, dynamic> imovel = {
@@ -65,8 +67,8 @@ class _CadastroImovelState extends State<CadastroImovel> {
       "estado": _estado,
       "ocupacao": _ocupacao,
       "status": _status,
-      "nomeCondominio": _nomeCondominioController.text,
-      "anoConstrucao": _anoConstrucaoController.text,
+      "nome_condominio": _nomeCondominioController.text,
+      "ano_construcao": _anoConstrucaoController.text,
       "cep": _cepController.text,
       "rua": _ruaController.text,
       "numero": _numeroController.text,
@@ -76,18 +78,19 @@ class _CadastroImovelState extends State<CadastroImovel> {
       "bairro": _bairroController.text,
       "cidade": _cidadeController.text,
       "uf": _ufController.text,
-      "salas": _salasController.text,
-      "banheiros": _banheirosController.text,
-      "vagas": _vagasController.text,
-      "varandas": _varandasController.text,
-      "quartos": _quartosController.text,
-      "suites": _suitesController.text,
-      "areaTotal": _areaTotalController.text,
-      "areaPrivativa": _areaPrivativaController.text,
-      "valorVenda": _valorVendaController.text,
-      "valorAluguel": _valorAluguelController.text,
-      "valorCondominio": _valorCondominioController.text,
-      "valorIPTU": _valorIPTUController.text,
+      "quantidade_salas": _salasController.text,
+      "quantidade_banheiros": _banheirosController.text,
+      "quantidade_vagas": _vagasController.text,
+      "quantidade_varandas": _varandasController.text,
+      "quantidade_quartos": _quartosController.text,
+      "quantidade_suites": _suitesController.text,
+      "area_total": _areaTotalController.text,
+      "area_privativa": _areaPrivativaController.text,
+      "valor_aluguel": _valorAluguelController.text,
+      "valor_condominio": _valorCondominioController.text,
+      "iptu": _valorIPTUController.text,
+      "titulo": _tituloController.text,
+      "descricao": _descricaoController.text,
     };
 
     if (imovel.isNotEmpty) {
@@ -216,6 +219,8 @@ class _CadastroImovelState extends State<CadastroImovel> {
     }
   }
 
+  int telaSelecionada = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -258,329 +263,425 @@ class _CadastroImovelState extends State<CadastroImovel> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () => {},
+                    onPressed: () => {
+                      setState(() {
+                        telaSelecionada = 0;
+                      }),
+                    },
                     child: Text(
                       'Cadastro',
                       style: TextStyle(color: Colors.black),
                     ),
                   ),
                   SizedBox(width: 20),
-                  ElevatedButton(onPressed: () => {}, child: Text("Anúncio")),
+                  ElevatedButton(
+                    onPressed: () => {
+                      setState(() {
+                        telaSelecionada = 1;
+                      }),
+                    },
+                    child: Text("Anúncio"),
+                  ),
                 ],
               ),
               SizedBox(height: 70),
-              GridView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  // mainAxisExtent: 5,
-                  // mainAxisSpacing: 5,
-                  // crossAxisSpacing: 4,
-                ),
-                children: [
-                  Column(
-                    children: [
-                      Text("ref:"),
-                      TextField(controller: _refController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Categoria:"),
-                      DropdownMenu<String>(
-                        label: Text("Selecione uma opção"),
-                        onSelected: (value) => setState(() {
-                          _categoria = value!;
-                        }),
-                        dropdownMenuEntries: [
-                          DropdownMenuEntry(
-                            value: "",
-                            label: "Selecione uma opção",
-                          ),
-                          DropdownMenuEntry(
-                            value: "Sala Comercial",
-                            label: "Sala Comercial",
-                          ),
+              telaSelecionada == 0
+                  ? GridView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        // mainAxisExtent: 5,
+                        // mainAxisSpacing: 5,
+                        // crossAxisSpacing: 4,
+                      ),
+                      children: [
+                        Column(
+                          children: [
+                            Text("ref:"),
+                            TextField(controller: _refController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "*",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 21,
+                                  ),
+                                ),
+                                Text("Categoria:"),
+                              ],
+                            ),
+                            DropdownMenu<String>(
+                              label: Text("Selecione uma opção"),
+                              onSelected: (value) => setState(() {
+                                _categoria = value!;
+                              }),
+                              dropdownMenuEntries: [
+                                DropdownMenuEntry(
+                                  value: "",
+                                  label: "Selecione uma opção",
+                                ),
+                                DropdownMenuEntry(
+                                  value: "Sala Comercial",
+                                  label: "Sala Comercial",
+                                ),
 
-                          DropdownMenuEntry(
-                            value: "Apartamento",
-                            label: "Apartamento",
-                          ),
+                                DropdownMenuEntry(
+                                  value: "Apartamento",
+                                  label: "Apartamento",
+                                ),
 
-                          DropdownMenuEntry(value: "Casa", label: "Casa"),
+                                DropdownMenuEntry(value: "Casa", label: "Casa"),
 
-                          DropdownMenuEntry(value: "Terreno", label: "Terreno"),
+                                DropdownMenuEntry(
+                                  value: "Terreno",
+                                  label: "Terreno",
+                                ),
 
-                          DropdownMenuEntry(value: "Galpão", label: "Galpão"),
-                        ],
+                                DropdownMenuEntry(
+                                  value: "Galpão",
+                                  label: "Galpão",
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Situação:"),
+                            DropdownMenu<String>(
+                              label: Text("Selecione uma opção"),
+                              dropdownMenuEntries: [
+                                DropdownMenuEntry(
+                                  value: "",
+                                  label: "Selecione uma opção",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Novo",
+                                  label: "Novo",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Usado",
+                                  label: "Usado",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Em construção",
+                                  label: "Em construção",
+                                ),
+                              ],
+                              onSelected: (value) => setState(() {
+                                _situacao = value!;
+                              }),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Estado:"),
+                            DropdownMenu<String>(
+                              label: Text("Selecione uma opção"),
+                              dropdownMenuEntries: [
+                                DropdownMenuEntry(
+                                  value: "",
+                                  label: "Selecione uma opção",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Bom",
+                                  label: "Bom",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Ótimo",
+                                  label: "Ótimo",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Regular",
+                                  label: "Regular",
+                                ),
+                              ],
+                              onSelected: (value) => setState(() {
+                                _estado = value!;
+                              }),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Ocupação:"),
+                            DropdownMenu<String>(
+                              label: Text("Selecione uma opção"),
+                              dropdownMenuEntries: [
+                                DropdownMenuEntry(
+                                  value: "",
+                                  label: "Selecione uma opção",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Desocupado",
+                                  label: "Desocupado",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Inquilino",
+                                  label: "Inquilino",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Proprietário",
+                                  label: "Proprietário",
+                                ),
+                              ],
+                              onSelected: (value) => setState(() {
+                                _ocupacao = value!;
+                              }),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "*",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 21,
+                                  ),
+                                ),
+                                Text("Status:"),
+                              ],
+                            ),
+                            DropdownMenu<String>(
+                              label: Text("Selecione uma opção"),
+                              dropdownMenuEntries: [
+                                DropdownMenuEntry(
+                                  value: "",
+                                  label: "Selecione uma opção",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Venda",
+                                  label: "Venda",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Aluguel",
+                                  label: "Aluguel",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Venda e Aluguel",
+                                  label: "Venda e Aluguel",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Alugado",
+                                  label: "Alugado",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Vendido",
+                                  label: "Vendido",
+                                ),
+                                DropdownMenuEntry<String>(
+                                  value: "Pendente",
+                                  label: "Pendente",
+                                ),
+                              ],
+                              onSelected: (value) => setState(() {
+                                debugPrint("Status selecionado: $value");
+                                _status = value!;
+                              }),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Nome do condominio:"),
+                            TextField(controller: _nomeCondominioController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Ano de Construção:"),
+                            TextField(controller: _anoConstrucaoController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "*",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 21,
+                                  ),
+                                ),
+                                Text("CEP:"),
+                              ],
+                            ),
+                            TextField(
+                              controller: _cepController,
+                              inputFormatters: [cepFormatador],
+                              onChanged: (value) => preencherEndereco(value),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Rua:"),
+                            TextField(controller: _ruaController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Número:"),
+                            TextField(controller: _numeroController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Complemento:"),
+                            TextField(controller: _complementoController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Bloco:"),
+                            TextField(controller: _blocoController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Andar:"),
+                            TextField(controller: _andarController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Bairro:"),
+                            TextField(controller: _bairroController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Cidade:"),
+                            TextField(controller: _cidadeController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("UF:"),
+                            TextField(controller: _ufController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Salas:"),
+                            TextField(controller: _salasController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Banheiros:"),
+                            TextField(controller: _banheirosController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Vagas:"),
+                            TextField(controller: _vagasController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Varandas:"),
+                            TextField(controller: _varandasController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Quartos:"),
+                            TextField(controller: _quartosController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Area Total:"),
+                            TextField(controller: _areaTotalController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Area Privativa:"),
+                            TextField(controller: _areaPrivativaController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Valor Venda:"),
+                            TextField(controller: _valorVendaController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Valor Aluguel:"),
+                            TextField(controller: _valorAluguelController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Valor Condominio:"),
+                            TextField(controller: _valorCondominioController),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Valor IPTU:"),
+                            TextField(controller: _valorIPTUController),
+                          ],
+                        ),
+                      ],
+                    )
+                  : GridView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1,
+                        mainAxisExtent: 200,
+                        mainAxisSpacing: 0,
+                        crossAxisSpacing: 0,
                       ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Situação:"),
-                      DropdownMenu<String>(
-                        label: Text("Selecione uma opção"),
-                        dropdownMenuEntries: [
-                          DropdownMenuEntry(
-                            value: "",
-                            label: "Selecione uma opção",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Novo",
-                            label: "Novo",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Usado",
-                            label: "Usado",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Em construção",
-                            label: "Em construção",
-                          ),
-                        ],
-                        onSelected: (value) => setState(() {
-                          _situacao = value!;
-                        }),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Estado:"),
-                      DropdownMenu<String>(
-                        label: Text("Selecione uma opção"),
-                        dropdownMenuEntries: [
-                          DropdownMenuEntry(
-                            value: "",
-                            label: "Selecione uma opção",
-                          ),
-                          DropdownMenuEntry<String>(value: "Bom", label: "Bom"),
-                          DropdownMenuEntry<String>(
-                            value: "Ótimo",
-                            label: "Ótimo",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Regular",
-                            label: "Regular",
-                          ),
-                        ],
-                        onSelected: (value) => setState(() {
-                          _estado = value!;
-                        }),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Ocupação:"),
-                      DropdownMenu<String>(
-                        label: Text("Selecione uma opção"),
-                        dropdownMenuEntries: [
-                          DropdownMenuEntry(
-                            value: "",
-                            label: "Selecione uma opção",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Desocupado",
-                            label: "Desocupado",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Inquilino",
-                            label: "Inquilino",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Proprietário",
-                            label: "Proprietário",
-                          ),
-                        ],
-                        onSelected: (value) => setState(() {
-                          _ocupacao = value!;
-                        }),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Status:"),
-                      DropdownMenu<String>(
-                        label: Text("Selecione uma opção"),
-                        dropdownMenuEntries: [
-                          DropdownMenuEntry(
-                            value: "",
-                            label: "Selecione uma opção",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Venda",
-                            label: "Venda",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Aluguel",
-                            label: "Aluguel",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Venda e Aluguel",
-                            label: "Venda e Aluguel",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Alugado",
-                            label: "Alugado",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Vendido",
-                            label: "Vendido",
-                          ),
-                          DropdownMenuEntry<String>(
-                            value: "Pendente",
-                            label: "Pendente",
-                          ),
-                        ],
-                        onSelected: (value) => setState(() {
-                          debugPrint("Status selecionado: $value");
-                          _status = value!;
-                        }),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Nome do condominio:"),
-                      TextField(controller: _nomeCondominioController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Ano de Construção:"),
-                      TextField(controller: _anoConstrucaoController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("CEP:"),
-                      TextField(
-                        controller: _cepController,
-                        inputFormatters: [cepFormatador],
-                        onChanged: (value) => preencherEndereco(value),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Rua:"),
-                      TextField(controller: _ruaController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Número:"),
-                      TextField(controller: _numeroController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Complemento:"),
-                      TextField(controller: _complementoController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Bloco:"),
-                      TextField(controller: _blocoController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Andar:"),
-                      TextField(controller: _andarController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Bairro:"),
-                      TextField(controller: _bairroController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Cidade:"),
-                      TextField(controller: _cidadeController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("UF:"),
-                      TextField(controller: _ufController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Salas:"),
-                      TextField(controller: _salasController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Banheiros:"),
-                      TextField(controller: _banheirosController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Vagas:"),
-                      TextField(controller: _vagasController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Varandas:"),
-                      TextField(controller: _varandasController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Quartos:"),
-                      TextField(controller: _quartosController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Area Total:"),
-                      TextField(controller: _areaTotalController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Area Privativa:"),
-                      TextField(controller: _areaPrivativaController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Valor Venda:"),
-                      TextField(controller: _valorVendaController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Valor Aluguel:"),
-                      TextField(controller: _valorAluguelController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Valor Condominio:"),
-                      TextField(controller: _valorCondominioController),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Valor IPTU:"),
-                      TextField(controller: _valorIPTUController),
-                    ],
-                  ),
-                ],
-              ),
+                      children: [
+                        Column(
+                          children: [
+                            Text("Titulo:"),
+                            TextField(
+                              controller: _tituloController,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 40.0,
+                                  horizontal: 10.0,
+                                ),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Descrição:"),
+                            TextField(
+                              controller: _descricaoController,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 90.0,
+                                  horizontal: 10.0,
+                                ),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
             ],
           ),
         ),
