@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'widgets/bottom-nav.dart';
 import 'package:projeto_pi_mobile/apis/api.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:projeto_pi_mobile/apis/imoveis.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class CadastroImovel extends StatefulWidget {
@@ -53,7 +51,7 @@ class _CadastroImovelState extends State<CadastroImovel> {
   String _ocupacao = "";
   String _status = "";
 
-  var cepFormatador = new MaskTextInputFormatter(
+  var cepFormatador = MaskTextInputFormatter(
     mask: '#####-###',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
@@ -99,7 +97,11 @@ class _CadastroImovelState extends State<CadastroImovel> {
           "${dotenv.get('ADDRESS')}imoveis.php?acao=cadastrar",
         );
 
-        final resposta = await http.post(uri, body: jsonEncode(imovel), headers: {"Cookie": sessionCookie ?? ""},);
+        final resposta = await http.post(
+          uri,
+          body: jsonEncode(imovel),
+          headers: {"Cookie": sessionCookie ?? ""},
+        );
         if (resposta.statusCode != 200) {
           debugPrint("Erro HTTP: ${resposta.statusCode}");
         }
@@ -221,8 +223,53 @@ class _CadastroImovelState extends State<CadastroImovel> {
 
   int telaSelecionada = 0;
 
+  void iniciarDados(Map<String, dynamic> imovel) {
+    _refController.text = imovel["id"]?.toString() ?? "";
+    _categoria = imovel["categoria"]?.toString() ?? "";
+    _situacao = imovel["situacao"]?.toString() ?? "";
+    _estado = imovel["estado"]?.toString() ?? "";
+    _ocupacao = imovel["ocupacao"]?.toString() ?? "";
+    _status = imovel["status"]?.toString() ?? "";
+    _nomeCondominioController.text =
+        imovel["nome_condominio"]?.toString() ?? "";
+    _anoConstrucaoController.text = imovel["ano_construcao"]?.toString() ?? "";
+    _cepController.text = imovel['endereco']?["cep"]?.toString() ?? "";
+    _ruaController.text = imovel['endereco']?["rua"]?.toString() ?? "";
+    _numeroController.text = imovel['endereco']?["numero"]?.toString() ?? "";
+    _complementoController.text =
+        imovel['endereco']?["complemento"]?.toString() ?? "";
+    _blocoController.text = imovel["bloco"]?.toString() ?? "";
+    _andarController.text = imovel["andar"]?.toString() ?? "";
+    _bairroController.text = imovel['endereco']?["bairro"]?.toString() ?? "";
+    _cidadeController.text = imovel['endereco']?["cidade"]?.toString() ?? "";
+    _ufController.text = imovel['endereco']?["uf"]?.toString() ?? "";
+    _salasController.text = imovel["quantidade_salas"]?.toString() ?? "";
+    _banheirosController.text =
+        imovel["quantidade_banheiros"]?.toString() ?? "";
+    _vagasController.text = imovel["quantidade_vagas"]?.toString() ?? "";
+    _varandasController.text = imovel["quantidade_varandas"]?.toString() ?? "";
+    _quartosController.text = imovel["quantidade_quartos"]?.toString() ?? "";
+    _suitesController.text = imovel["quantidade_suites"]?.toString() ?? "";
+    _areaTotalController.text = imovel["area_total"]?.toString() ?? "";
+    _areaPrivativaController.text = imovel["area_privativa"]?.toString() ?? "";
+    _valorAluguelController.text = imovel["valor_aluguel"]?.toString() ?? "";
+    _valorCondominioController.text =
+        imovel["valor_condominio"]?.toString() ?? "";
+    _valorIPTUController.text = imovel["iptu"]?.toString() ?? "";
+    _tituloController.text = imovel['anuncio']?["titulo"]?.toString() ?? "";
+    _descricaoController.text =
+        imovel['anuncio']?["descricao"]?.toString() ?? "";
+  }
+
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic>? imovel =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+    if (imovel != null) {
+      iniciarDados(imovel);
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Cadastro de Imóvel')),
       body: Center(
@@ -317,6 +364,9 @@ class _CadastroImovelState extends State<CadastroImovel> {
                               ],
                             ),
                             DropdownMenu<String>(
+                              initialSelection: _categoria.isNotEmpty
+                                  ? _categoria
+                                  : null,
                               label: Text("Selecione uma opção"),
                               onSelected: (value) => setState(() {
                                 _categoria = value!;
@@ -355,6 +405,9 @@ class _CadastroImovelState extends State<CadastroImovel> {
                           children: [
                             Text("Situação:"),
                             DropdownMenu<String>(
+                              initialSelection: _situacao.isNotEmpty
+                                  ? _situacao
+                                  : null,
                               label: Text("Selecione uma opção"),
                               dropdownMenuEntries: [
                                 DropdownMenuEntry(
@@ -384,6 +437,9 @@ class _CadastroImovelState extends State<CadastroImovel> {
                           children: [
                             Text("Estado:"),
                             DropdownMenu<String>(
+                              initialSelection: _estado.isNotEmpty
+                                  ? _estado
+                                  : null,
                               label: Text("Selecione uma opção"),
                               dropdownMenuEntries: [
                                 DropdownMenuEntry(
@@ -413,6 +469,9 @@ class _CadastroImovelState extends State<CadastroImovel> {
                           children: [
                             Text("Ocupação:"),
                             DropdownMenu<String>(
+                              initialSelection: _ocupacao.isNotEmpty
+                                  ? _ocupacao
+                                  : null,
                               label: Text("Selecione uma opção"),
                               dropdownMenuEntries: [
                                 DropdownMenuEntry(
@@ -453,6 +512,9 @@ class _CadastroImovelState extends State<CadastroImovel> {
                               ],
                             ),
                             DropdownMenu<String>(
+                              initialSelection: _status.isNotEmpty
+                                  ? _status
+                                  : null,
                               label: Text("Selecione uma opção"),
                               dropdownMenuEntries: [
                                 DropdownMenuEntry(

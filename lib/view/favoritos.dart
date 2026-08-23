@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../apis/api.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../utils/app_theme.dart';
 
 class Favoritos extends StatefulWidget {
   const Favoritos({super.key});
@@ -15,23 +16,19 @@ class Favoritos extends StatefulWidget {
 }
 
 void abrirTelaImovel(BuildContext context, Map<String, dynamic> imovel) {
-  Navigator.pushReplacementNamed(
-    context,
-    '/dados_imovel',
-    arguments: imovel,
-  );
+  Navigator.pushReplacementNamed(context, '/dados_imovel', arguments: imovel);
 }
 
-class ContainerAnuncio extends StatefulWidget {
+class CardAnuncio extends StatefulWidget {
   final Map<String, dynamic> imovel;
 
-  const ContainerAnuncio({super.key, required this.imovel});
+  const CardAnuncio({super.key, required this.imovel});
 
   @override
-  State<ContainerAnuncio> createState() => _ContainerAnuncioState();
+  State<CardAnuncio> createState() => _CardAnuncioState();
 }
 
-class _ContainerAnuncioState extends State<ContainerAnuncio> {
+class _CardAnuncioState extends State<CardAnuncio> {
   int imagemAtual = 0;
 
   List<String> _imagensDoAnuncio() {
@@ -51,125 +48,201 @@ class _ContainerAnuncioState extends State<ContainerAnuncio> {
   @override
   Widget build(BuildContext context) {
     final imagens = _imagensDoAnuncio();
-
-    // @Preview(
-
-    // )
+    final anuncio = widget.imovel['anuncio'] ?? {};
+    final endereco = widget.imovel['endereco'] ?? {};
 
     return GestureDetector(
       onTap: () {
         abrirTelaImovel(context, widget.imovel);
       },
-
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        color: const Color.fromRGBO(203, 199, 199, 0.6),
-        child: Column(
-          children: [
-            // Icon(icons.heart,)
-            if (imagens.isNotEmpty)
-              SizedBox(
-                height: 200,
-                child: Stack(
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (imagens.isNotEmpty)
+                Stack(
                   children: [
-                    Image.network(
-                      imagens[imagemAtual],
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-
-                    const Positioned(
-                      top: 8,
-                      right: 8,
-                      child: IconButton(
-                        onPressed: null,
-                        icon: Icon(Icons.favorite),
-                        color: Colors.white,
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
+                      child: Image.network(
+                        imagens[imagemAtual],
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: double.infinity,
+                            height: 200,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.image_not_supported),
+                          );
+                        },
                       ),
                     ),
-
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.favorite),
+                          color: Colors.red,
+                          onPressed: () {},
+                        ),
+                      ),
+                    ),
                     if (imagemAtual > 0)
                       Positioned(
                         left: 8,
                         top: 75,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              imagemAtual--;
-                            });
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() => imagemAtual--);
                           },
-                          icon: const Icon(
-                            Icons.chevron_left,
-                            color: Colors.white,
-                            size: 40,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.chevron_left,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                           ),
                         ),
                       ),
-
                     if (imagemAtual < imagens.length - 1)
                       Positioned(
                         right: 8,
                         top: 75,
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              imagemAtual++;
-                            });
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() => imagemAtual++);
                           },
-                          icon: const Icon(
-                            Icons.chevron_right,
-                            color: Colors.white,
-                            size: 40,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.chevron_right,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                           ),
                         ),
                       ),
                   ],
                 ),
-              ),
-
-            Text("${widget.imovel["anuncio"]["titulo"]}"),
-
-            Text(
-              "${widget.imovel["endereco"]["rua"]}, ${widget.imovel["endereco"]["numero"]}, ${widget.imovel['endereco']['cep']}, ${widget.imovel["endereco"]["bairro"]}, ${widget.imovel["endereco"]["cidade"]} - ${widget.imovel["endereco"]["uf"]}",
-            ),
-
-            Text("Categoria: ${widget.imovel["categoria"]}"),
-
-            if (widget.imovel["valor_aluguel"] != null)
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(color: Colors.black, fontSize: 16),
-                  children: [
-                    const TextSpan(text: "Aluguel: "),
-                    TextSpan(
-                      text: "R\$ ${widget.imovel["valor_aluguel"]}",
-                      style: const TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        anuncio['titulo'] ?? 'Sem título',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.hoverColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              anuncio['categoria'] ?? 'N/A',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.hoverColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "${endereco['rua'] ?? ''}, ${endereco['bairro'] ?? ''} - ${endereco['cidade'] ?? ''}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const Spacer(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (anuncio['aluguel'] != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Aluguel',
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: Colors.grey[600]),
+                                ),
+                                Text(
+                                  'R\$ ${anuncio['aluguel']}',
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
+                                        color: AppColors.precoColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          if (anuncio['venda'] != null)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Venda',
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: Colors.grey[600]),
+                                ),
+                                Text(
+                                  'R\$ ${anuncio['venda']}',
+                                  style: Theme.of(context).textTheme.bodyLarge
+                                      ?.copyWith(
+                                        color: AppColors.precoColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-
-            if (widget.imovel["valor_venda"] != null)
-              RichText(
-                text: TextSpan(
-                  style: const TextStyle(color: Colors.black, fontSize: 16),
-                  children: [
-                    const TextSpan(text: "Venda: "),
-                    TextSpan(
-                      text: "R\$ ${widget.imovel["valor_venda"]}",
-                      style: const TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -177,37 +250,70 @@ class _ContainerAnuncioState extends State<ContainerAnuncio> {
 }
 
 class _FavoritosState extends State<Favoritos> {
-  List<dynamic> imoveis = [];
+  late Future<List<dynamic>?> _imoveis;
 
-  Future<void> carregar() async {
-    final dados = await listarImoveisFavoritados();
-
-    setState(() {
-      imoveis = dados ?? [];
-    });
+  @override
+  void initState() {
+    super.initState();
+    _imoveis = listarImoveisFavoritados();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Favoritos')),
-      body: Center(
-        child: imoveis.isNotEmpty
-            ? MasonryGridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate:
-                    const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                    ),
-                itemCount: imoveis.length,
-                mainAxisSpacing: 15,
-                crossAxisSpacing: 15,
-                itemBuilder: (context, index) {
-                  return ContainerAnuncio(imovel: imoveis[index]);
-                },
-              )
-            : CircularProgressIndicator(),
+      appBar: AppBar(title: const Text('Favoritos'), elevation: 0),
+      body: FutureBuilder(
+        future: _imoveis,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text("Erro: ${snapshot.error}"),
+                ],
+              ),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.favorite_border_outlined,
+                    size: 64,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Nenhum favorito no momento",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final imoveis = snapshot.data ?? [];
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: MasonryGridView.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              itemCount: imoveis.length,
+              itemBuilder: (context, index) {
+                return CardAnuncio(imovel: imoveis[index]);
+              },
+            ),
+          );
+        },
       ),
       bottomNavigationBar: const BottomNav(currentIndex: 1),
     );

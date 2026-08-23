@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_pi_mobile/view/tela_inicial.dart';
 import 'package:projeto_pi_mobile/view/cadastro_imovel.dart';
 import 'package:projeto_pi_mobile/view/cadastro_cliente.dart';
 import 'package:projeto_pi_mobile/view/login.dart';
@@ -11,6 +10,9 @@ import 'package:projeto_pi_mobile/view/dados_cliente.dart';
 import 'package:projeto_pi_mobile/view/dados_imovel.dart';
 import 'package:projeto_pi_mobile/view/notificacoes.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:projeto_pi_mobile/view/estoque.dart';
+import 'package:projeto_pi_mobile/view/tela_inicial.dart';
+import 'package:projeto_pi_mobile/utils/app_theme.dart';
 
 void main() async {
   try {
@@ -29,8 +31,11 @@ class MeuApp extends StatelessWidget {
     return MaterialApp(
       title: 'Imóveis',
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme(),
+      darkTheme: AppTheme.darkTheme(),
+      themeMode: ThemeMode.system,
       routes: {
-        '/tela_inicial': (context) => const CadastroCliente(),
+        '/tela_inicial': (context) => const TelaInicial(),
         '/login': (context) => const TelaLogin(),
         '/cadastro_imovel': (context) => const CadastroImovel(),
         '/opcoes': (context) => const Opcoes(),
@@ -41,6 +46,7 @@ class MeuApp extends StatelessWidget {
         '/cadastro_cliente': (context) => const CadastroCliente(),
         '/dados_imovel': (context) => const DadosImovel(),
         '/notificacoes': (context) => const Notificacoes(),
+        '/estoque': (context) => const Estoque(),
       },
       initialRoute: '/tela_inicial',
     );

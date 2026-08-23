@@ -35,25 +35,25 @@ class _CadastroClienteState extends State<CadastroCliente> {
 
   String _tipo = "";
 
-  var telefoneFormatador = new MaskTextInputFormatter(
+  var telefoneFormatador = MaskTextInputFormatter(
     mask: '(##) #####-####',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
 
-  var cpfCnpjFormatador = new MaskTextInputFormatter(
+  var cpfCnpjFormatador = MaskTextInputFormatter(
     mask: '###.###.###-##',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
 
-  var cepFormatador = new MaskTextInputFormatter(
+  var cepFormatador = MaskTextInputFormatter(
     mask: '#####-###',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
 
-  var dataNascimentoFormatador = new MaskTextInputFormatter(
+  var dataNascimentoFormatador = MaskTextInputFormatter(
     mask: '##/##/####',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,

@@ -121,9 +121,7 @@ void excluirImovel(int imovelId) async {
 
 Future<List<dynamic>?> listarImoveis() async {
   try {
-    final uri = Uri.parse(
-      "${dotenv.get('ADDRESS')}imoveis.php?acao=listar_imoveis",
-    );
+    final uri = Uri.parse("${dotenv.get('ADDRESS')}imoveis.php?acao=listar");
 
     final resposta = await http.get(
       uri,
@@ -144,11 +142,16 @@ Future<List<dynamic>?> listarImoveis() async {
       return null;
     }
 
-    final payload = jsonDecode(resposta.body);
-    final data = _extrairLista(payload, origem: 'listarImoveis');
+    if (resposta.body.isEmpty) {
+      debugPrint("Resposta vazia do servidor");
+      return [];
+    }
 
-    if (data == null) {
-      return null;
+    final List<dynamic> data = jsonDecode(resposta.body);
+
+    if (data.isEmpty) {
+      debugPrint("Nenhum imóvel encontrado");
+      return [];
     }
 
     for (final imovel in data) {
@@ -242,7 +245,7 @@ Future<List<dynamic>?> listarImoveisDisponiveis() async {
 Future<Map<String, dynamic>?> getDadosImovel(int id) async {
   try {
     final uri = Uri.parse(
-      "${dotenv.get('ADDRESS')}imoveis.php?acao=get_dados_imovel&id=$id",
+      "${dotenv.get('ADDRESS')}imoveis.php?acao=get_imovel&id=$id",
     );
 
     final resposta = await http.get(

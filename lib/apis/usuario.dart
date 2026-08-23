@@ -130,7 +130,7 @@ Future<Map<String, dynamic>?> carregarUser() async {
     final dados = jsonDecode(resposta.body);
 
     if (dados["status"] == "erro") {
-      debugPrint("Usuário não logado: ${dados["mensagem"]}");
+      debugPrint("Usuário não logado");
       return null;
     }
 

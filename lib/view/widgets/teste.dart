@@ -25,9 +25,9 @@ class _BotaoCadastroExpandidoState extends State<BotaoCadastroExpandido> {
         overlayChildBuilder: (BuildContext context) {
           return CompositedTransformFollower(
             link: _layerLink,
-            targetAnchor: Alignment.bottomLeft, 
+            targetAnchor: Alignment.bottomLeft,
             followerAnchor: Alignment.topLeft,
-            offset: const Offset(0, 8), 
+            offset: const Offset(0, 8),
             child: Align(
               alignment: Alignment.topLeft,
               child: Material(
@@ -35,7 +35,7 @@ class _BotaoCadastroExpandidoState extends State<BotaoCadastroExpandido> {
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.white,
                 child: SizedBox(
-                  width: 200, 
+                  width: 200,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -43,14 +43,14 @@ class _BotaoCadastroExpandidoState extends State<BotaoCadastroExpandido> {
                         leading: const Icon(Icons.home),
                         title: const Text('Cadastrar Imóvel'),
                         onTap: () {
-                          _tooltipController.hide(); 
+                          _tooltipController.hide();
                         },
                       ),
                       ListTile(
                         leading: const Icon(Icons.person),
                         title: const Text('Cadastrar Cliente'),
                         onTap: () {
-                          _tooltipController.hide(); 
+                          _tooltipController.hide();
                         },
                       ),
                     ],

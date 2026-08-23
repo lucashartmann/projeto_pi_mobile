@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../apis/notificacoes.dart';
+import '../../utils/app_theme.dart';
 
 class BottomNav extends StatefulWidget {
   final int currentIndex;
@@ -21,12 +22,22 @@ class BottomNavState extends State<BottomNav> {
   }
 
   Future<void> carregar() async {
-    final dados = await carregarNotificacoes();
+    try {
+      final dados = await carregarNotificacoes();
 
-    setState(() {
-      notificacoes = dados ?? [];
-      temNaoLidas = notificacoes.any((n) => n["lida"] == false);
-    });
+      setState(() {
+        if (dados is Map) {
+          notificacoes = dados != null && dados.isNotEmpty ? [dados] : [];
+        } else if (dados is List) {
+          notificacoes = dados;
+        } else {
+          notificacoes = [];
+        }
+        temNaoLidas = notificacoes.any((n) => n is Map && n["lida"] == false);
+      });
+    } catch (e) {
+      debugPrint("Erro ao carregar notificações: $e");
+    }
   }
 
   void _navigateTo(BuildContext context, int index) {
@@ -64,30 +75,75 @@ class BottomNavState extends State<BottomNav> {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      backgroundColor: const Color.fromRGBO(36, 30, 30, 0.92),
-      selectedItemColor: Colors.red,
-      unselectedItemColor: Colors.white,
+      backgroundColor: AppColors.backgroundNav,
+      selectedItemColor: AppColors.hoverColor,
+      unselectedItemColor: Colors.grey[400],
       currentIndex: widget.currentIndex,
       onTap: (index) => _navigateTo(context, index),
+      elevation: 8,
       items: [
-        const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.favorite_border),
+          activeIcon: Icon(Icons.favorite),
           label: 'Favoritos',
         ),
-        const BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Opções'),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.insert_comment),
+          icon: Icon(Icons.menu_outlined),
+          activeIcon: Icon(Icons.menu),
+          label: 'Opções',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.chat_bubble_outline),
+          activeIcon: Icon(Icons.chat_bubble),
           label: 'Atendimentos',
         ),
         BottomNavigationBarItem(
-          icon: Icon(
-            temNaoLidas ? Icons.notifications : Icons.notifications_none,
+          icon: Stack(
+            children: [
+              const Icon(Icons.notifications_outlined),
+              if (temNaoLidas)
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
           ),
-          label: 'Mensagens',
+          activeIcon: Stack(
+            children: [
+              const Icon(Icons.notifications),
+              if (temNaoLidas)
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          label: 'Notificações',
         ),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.person),
+          icon: Icon(Icons.person_outline),
+          activeIcon: Icon(Icons.person),
           label: 'Perfil',
         ),
       ],
