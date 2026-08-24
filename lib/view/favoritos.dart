@@ -61,7 +61,7 @@ class _CardAnuncioState extends State<CardAnuncio> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.2), width: 1),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +93,7 @@ class _CardAnuncioState extends State<CardAnuncio> {
                       right: 8,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
@@ -113,7 +113,7 @@ class _CardAnuncioState extends State<CardAnuncio> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -134,7 +134,7 @@ class _CardAnuncioState extends State<CardAnuncio> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -170,7 +170,7 @@ class _CardAnuncioState extends State<CardAnuncio> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.hoverColor.withOpacity(0.2),
+                              color: AppColors.hoverColor.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(

@@ -79,7 +79,7 @@ class _DadosClienteState extends State<DadosCliente> {
                               width: 100,
                               height: 100,
                               decoration: BoxDecoration(
-                                color: AppColors.hoverColor.withOpacity(0.2),
+                                color: AppColors.hoverColor.withValues(alpha: 0.2),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -97,8 +97,8 @@ class _DadosClienteState extends State<DadosCliente> {
                             const SizedBox(height: 4),
                             Chip(
                               label: Text(usuario['tipo'] ?? 'Cliente'),
-                              backgroundColor: AppColors.hoverColor.withOpacity(
-                                0.2,
+                              backgroundColor: AppColors.hoverColor.withValues(
+                                alpha: 0.2,
                               ),
                               labelStyle: const TextStyle(
                                 color: AppColors.hoverColor,

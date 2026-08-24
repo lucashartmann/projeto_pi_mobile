@@ -22,7 +22,7 @@ class _AtendimentoState extends State<Atendimento> {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: AppColors.hoverColor.withOpacity(0.2),
+                color: AppColors.hoverColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(

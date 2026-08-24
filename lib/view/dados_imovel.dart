@@ -92,7 +92,7 @@ class _DadosImovelState extends State<DadosImovel> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -113,7 +113,7 @@ class _DadosImovelState extends State<DadosImovel> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -151,7 +151,7 @@ class _DadosImovelState extends State<DadosImovel> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.hoverColor.withOpacity(0.2),
+                                color: AppColors.hoverColor.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -351,7 +351,7 @@ class _DadosImovelState extends State<DadosImovel> {
                                   Chip(
                                     label: Text(filtro),
                                     backgroundColor: AppColors.hoverColor
-                                        .withOpacity(0.2),
+                                        .withValues(alpha: 0.2),
                                     labelStyle: TextStyle(
                                       color: AppColors.hoverColor,
                                     ),
@@ -388,7 +388,7 @@ class _DadosImovelState extends State<DadosImovel> {
                                   Chip(
                                     label: Text(filtro),
                                     backgroundColor: AppColors.precoColor
-                                        .withOpacity(0.2),
+                                        .withValues(alpha: 0.2),
                                     labelStyle: TextStyle(
                                       color: AppColors.precoColor,
                                     ),

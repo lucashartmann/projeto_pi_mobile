@@ -33,7 +33,7 @@ class _OpcoesState extends State<Opcoes> {
               ListTile(
                 leading: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.hoverColor.withOpacity(0.2),
+                    color: AppColors.hoverColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -51,7 +51,7 @@ class _OpcoesState extends State<Opcoes> {
               ListTile(
                 leading: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.precoColor.withOpacity(0.2),
+                    color: AppColors.precoColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -171,7 +171,7 @@ class _OpcoesState extends State<Opcoes> {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 32),

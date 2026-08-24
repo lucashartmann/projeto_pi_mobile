@@ -212,7 +212,7 @@ class _TelaLoginState extends State<TelaLogin> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.hoverColor.withOpacity(0.1),
+                  color: AppColors.hoverColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(

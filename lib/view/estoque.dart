@@ -87,11 +87,11 @@ class _EstoqueState extends State<Estoque> {
                     : Colors.grey[800],
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                  borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                  borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -231,8 +231,8 @@ class _EstoqueState extends State<Estoque> {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.precoColor.withOpacity(
-                                        0.1,
+                                      color: AppColors.precoColor.withValues(
+                                        alpha: 0.1,
                                       ),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
@@ -256,8 +256,8 @@ class _EstoqueState extends State<Estoque> {
                                         vertical: 2,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: AppColors.precoColor.withOpacity(
-                                          0.1,
+                                        color: AppColors.precoColor.withValues(
+                                          alpha: 0.1,
                                         ),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
